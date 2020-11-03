@@ -11,9 +11,12 @@ export class MapContainer extends Component {
     super(props);
     this.state = {
       isStartingMarkerShown: false,
-      startingMarkerPosition: null
+      startingMarkerPosition: null,
+      isEndMarkerShown: false,
+      endMarkerPosition: null
     };
     this.handleMapClick = this.handleMapClick.bind(this);
+    this.handleMapRightClick = this.handleMapRightClick.bind(this);
   }
 
   handleMapClick = (ref, map, ev) => {
@@ -22,20 +25,43 @@ export class MapContainer extends Component {
       isStartingMarkerShown: true,
       startingMarkerPosition: location
     });
-    console.log(location);
+    // console.log(location);
     map.panTo(location);
   };
 
-  onMarkerDragEnd = (coord) => {
+  handleMapRightClick = (ref, map, ev) => {
+    const location = ev.latLng;
+    this.setState({
+      isEndMarkerShown: true,
+      endMarkerPosition: location
+    });
+    // console.log(location);
+    map.panTo(location);
+  };
+
+  onStartingMarkerDragEnd = (coord) => {
     const { latLng } = coord;
     
     this.setState({
       isStartingMarkerShown: true,
       startingMarkerPosition: latLng
     });
-    console.log(latLng);
+    // console.log(latLng);
 
   };
+
+  onEndMarkerDragEnd = (coord) => {
+    const { latLng } = coord;
+    
+    this.setState({
+      isEndMarkerShown: true,
+      endMarkerPosition: latLng
+    });
+    // console.log(latLng);
+
+  };
+
+
 
   render() {
     return (
@@ -50,13 +76,23 @@ export class MapContainer extends Component {
           }
         }
         onClick={this.handleMapClick}
+        onRightclick={this.handleMapRightClick}
       >
         {this.state.isStartingMarkerShown && 
         <Marker 
         position={this.state.startingMarkerPosition}
         draggable={true}
-        onDragend={(t, map, coord) => this.onMarkerDragEnd(coord)}
+        label="A"
+        onDragend={(t, map, coord) => this.onStartingMarkerDragEnd(coord)}
         />}
+        {this.state.isEndMarkerShown && 
+        <Marker 
+        position={this.state.endMarkerPosition}
+        draggable={true}
+        label="B"
+        onDragend={(t, map, coord) => this.onEndMarkerDragEnd(coord)}
+        />}
+
       </Map>
     );
   }

@@ -22,10 +22,20 @@ export class MapContainer extends Component {
       isStartingMarkerShown: true,
       startingMarkerPosition: location
     });
+    console.log(location);
     map.panTo(location);
   };
 
+  onMarkerDragEnd = (coord) => {
+    const { latLng } = coord;
+    
+    this.setState({
+      isStartingMarkerShown: true,
+      startingMarkerPosition: latLng
+    });
+    console.log(latLng);
 
+  };
 
   render() {
     return (
@@ -41,7 +51,12 @@ export class MapContainer extends Component {
         }
         onClick={this.handleMapClick}
       >
-        {this.state.isStartingMarkerShown && <Marker position={this.state.startingMarkerPosition} />}
+        {this.state.isStartingMarkerShown && 
+        <Marker 
+        position={this.state.startingMarkerPosition}
+        draggable={true}
+        onDragend={(t, map, coord) => this.onMarkerDragEnd(coord)}
+        />}
       </Map>
     );
   }

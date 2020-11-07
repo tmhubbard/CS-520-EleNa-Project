@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Map, GoogleApiWrapper, Marker } from 'google-maps-react';
+import { Map, GoogleApiWrapper, Marker, Polyline } from 'google-maps-react';
 
 const mapStyles = {
   width: '100%',
@@ -25,7 +25,7 @@ export class MapContainer extends Component {
       isStartingMarkerShown: true,
       startingMarkerPosition: location
     });
-    // console.log(location);
+    console.log(location);
     map.panTo(location);
   };
 
@@ -35,7 +35,7 @@ export class MapContainer extends Component {
       isEndMarkerShown: true,
       endMarkerPosition: location
     });
-    // console.log(location);
+    console.log(location);
     map.panTo(location);
   };
 
@@ -64,6 +64,10 @@ export class MapContainer extends Component {
 
 
   render() {
+    // const pathCoordinates = [
+    //   { lat: 42.37380692489817, lng: -72.53280681833881 },
+    //   { lat: 42.37314905741523, lng: -72.51986784205097 }
+    // ];
     return (
       <Map
         google={this.props.google}
@@ -78,6 +82,15 @@ export class MapContainer extends Component {
         onClick={this.handleMapClick}
         onRightclick={this.handleMapRightClick}
       >
+        {/* <Polyline
+          path={pathCoordinates}
+          geodesic={true}
+          options={{
+              strokeColor: "#ff2527",
+              strokeOpacity: 0.75,
+              strokeWeight: 2,
+          }}
+          /> */}
         {this.state.isStartingMarkerShown && 
         <Marker 
         position={this.state.startingMarkerPosition}

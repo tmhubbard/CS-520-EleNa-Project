@@ -30,7 +30,6 @@ def valid_location(location):
     print(url)
     #request = requests.get(url  + str(lat) + "," + str(lng) + "&key=" + apikey)
     #print(request)
-    breakpoint()
     #return request
 
 

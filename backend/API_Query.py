@@ -57,5 +57,26 @@ print(elevations(locations=locations))
 
 
 
+# #place_query = {'city':'Amherst', 'state':'Massachusetts', 'country':'USA'}
+# address = "139 Starling way, Hercules CA"
+# graph_orig = ox.graph_from_address(address, dist = 1000, network_type='drive') #drive and bike
+# graph_orig = ox.add_node_elevations(graph_orig, api_key= "AIzaSyBmg_5waDYCtmUW3YCNJ75dUWc6_5_i8wE")
+# graph_orig = ox.add_edge_grades(graph_orig)
+# route_nodes= []
+# for i in range(10):
+#     node_id = list(graph_orig.nodes())[]
+#     print(node_id)
+#     route_nodes.append(node_id)
+# breakpoint()
+# origin_lat , origin_long =38.003560 , -122.268830
+# node1 =57785756
+# node2 = 57791348
+# #bbox = ox.bbox_from_point((float(origin_lat), float(origin_long)), distance=1500, project_utm=True)
+# ox.plot_graph_route(graph_orig, route= route_nodes,  route_color = 'r',  route_linewidth=4, route_alpha=0.5, orig_dest_size=100, ax=None)
+# # #ox.plot_graph(graph_orig)
+
+
+
+
 
 

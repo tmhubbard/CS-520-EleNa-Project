@@ -3,11 +3,11 @@ class Node:
             self, 
             id: int, 
             latitude: float, longitude: float, 
-            edge_list: list = None):
+            neighbors: list = None):
         self._id = id
         self._latitude = latitude
         self._longitude = longitude
-        self._edge_list = edge_list
+        self._neighbors = neighbors
     
     @property
     def id(self) -> int:
@@ -34,17 +34,17 @@ class Node:
         self._longitude = longitude
 
     @property
-    def edge_list(self) -> list:
-        return self._edge_list
+    def neighbors(self) -> list:
+        return self._neighbors
     
-    @edge_list.setter 
-    def edge_list(self, edge_list: list):
-        self._edge_list = edge_list
+    @neighbors.setter 
+    def neighbors(self, neighbors: list):
+        self._neighbors = neighbors
     
     def as_json(self) -> dict:
         return {
             "id": self._id,
             "latitude": self._latitude,
             "longitude": self._longitude,
-            "edge_list": self._edge_list,
+            "neighbors": self._neighbors,
         }

@@ -1,5 +1,5 @@
 import React from 'react';
-import Slider from 'components/Slider';
+import Slider from './Slider';
 
 class InputForm extends React.Component {
     constructor(props) {
@@ -33,6 +33,7 @@ class InputForm extends React.Component {
 
     render() {
         return (
+            <div style={{float: 'right'}}>
             <form>
                 <label>
                     Start Point
@@ -63,6 +64,7 @@ class InputForm extends React.Component {
                 </div>
                 <input type="submit" value="Find Route" />
             </form>
+            </div>
         );
     }
 }

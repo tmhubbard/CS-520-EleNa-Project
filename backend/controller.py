@@ -1,3 +1,5 @@
+import requests
+#import osmnx as ox
 import json
 import urllib
 import requests
@@ -6,36 +8,52 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from PIL import Image
 
+class controller(object):
+
+    def _init_(self):
+        self.model = None #
+        self.view = None
+
+    def set_model(self, model):
+        self.model = model
+
+    def set_view(self, view):
+        self.view =view
+
+
+
+    def A_Star(self, graph , start, goal, edge_list, mode= "minimize"):
+#default value is minimize if nothing selected
+#check for mode as min or max
+#returns list of nodes
+        pass
+
+    def dijkstra(self, graph , start, goal, edge_list, mode= "minimize"):
+        pass
+#default value is minimize if nothing selected
+#check for mode as min or max
+#returns list of nodes
 
 
 
 
-# place_query = {'city':'Amherst', 'state':'Massachusetts', 'country':'USA'}
-# pq2 = "154 Hicks Way, Amherst, MA 01003"
-# graph_orig = ox.graph_from_address(pq2, dist = 1000, network_type='walk')
-# ox.plot_graph(graph_orig)
-# breakpoint()
 
 
-def get_map():
+
+def get_map(address):
     apikey = "AIzaSyBmg_5waDYCtmUW3YCNJ75dUWc6_5_i8wE"
-    url = "https://maps.googleapis.com/maps/api/staticmap?center=Berkeley,CA&zoom=14&size=400x400&key="
-    respond = requests.get(url+apikey)
+    url = "https://maps.googleapis.com/maps/api/staticmap?center=+"+str(address)+"&zoom=14&size=400x400&key="
+    respond = requests.get(url + apikey)
     imagex = respond.content
-    image_data = imagex # byte values of the image
+    image_data = imagex  # byte values of the image
     image_plot = plt.imread(image_data)
     imgplot = plt.imshow(image_plot)
     plt.show()
-    #open('test_map.png', 'wb').write(image_data)
+    # open('test_map.png', 'wb').write(image_data)
 
 
+get_map("Berkeley,CA")
 
-
-
-
-
-get_map()
-breakpoint()
 
 
 def elevation(location):
@@ -43,22 +61,24 @@ def elevation(location):
     lng = location[1]
     apikey = "AIzaSyBmg_5waDYCtmUW3YCNJ75dUWc6_5_i8wE"
     url = "https://maps.googleapis.com/maps/api/elevation/json"
-    request = requests.get(url+"?locations="+str(lat)+","+str(lng)+"&key="+apikey).json()
+    request = requests.get(url + "?locations=" + str(lat) + "," + str(lng) + "&key=" + apikey).json()
     return request['results'][0]['elevation']
 
     """
     this function will check the validity of a location ((lat, lng)) 
     return type: boolean 
-     
+
     """
+
+
 def valid_location(location):
     lat = location[0]
     lng = location[1]
     apikey = "AIzaSyBmg_5waDYCtmUW3YCNJ75dUWc6_5_i8wE"
     url = "https://roads.googleapis.com/v1/nearestRoads?" + str(lat) + "," + str(lng) + "&key=" + apikey
     print(url)
-    #request = requests.get(url  + str(lat) + "," + str(lng) + "&key=" + apikey)
-    #print(request)
+    # request = requests.get(url  + str(lat) + "," + str(lng) + "&key=" + apikey)
+    # print(request)
     breakpoint()
 
     """
@@ -69,31 +89,21 @@ def valid_location(location):
     """
 
 
-locations = [(35.929673, -78.948237), (38.889510, -77.032000), (38.032120, -78.477510)]
-locations2 = (35.929673, -78.948237)
-print(valid_location(locations2))
-
-
-def elevations(locations):
-    Nodes = []
-    for location in locations:
-        # check valid here
-        node = (location[0], location[1], elevation(location))
-        Nodes.append(node)
-    return Nodes
-
-
-print(elevations(locations=locations))
-
-
-
-
-
-
-
-
-
-
+# locations = [(35.929673, -78.948237), (38.889510, -77.032000), (38.032120, -78.477510)]
+# locations2 = (35.929673, -78.948237)
+# print(valid_location(locations2))
+#
+#
+# def elevations(locations):
+#     Nodes = []
+#     for location in locations:
+#         # check valid here
+#         node = (location[0], location[1], elevation(location))
+#         Nodes.append(node)
+#     return Nodes
+#
+#
+# print(elevations(locations=locations))
 
 # #place_query = {'city':'Amherst', 'state':'Massachusetts', 'country':'USA'}
 # address = "139 Starling way, Hercules CA"
@@ -112,6 +122,8 @@ print(elevations(locations=locations))
 # #bbox = ox.bbox_from_point((float(origin_lat), float(origin_long)), distance=1500, project_utm=True)
 # ox.plot_graph_route(graph_orig, route= route_nodes,  route_color = 'r',  route_linewidth=4, route_alpha=0.5, orig_dest_size=100, ax=None)
 # # #ox.plot_graph(graph_orig)
+
+
 
 
 

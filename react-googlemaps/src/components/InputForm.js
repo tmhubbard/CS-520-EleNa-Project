@@ -13,6 +13,7 @@ class InputForm extends React.Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleSliderChange = this.handleSliderChange.bind(this);
     }
 
     handleChange(event) {
@@ -29,6 +30,11 @@ class InputForm extends React.Component {
     handleSubmit(event) {
         //console.log("form submitted");
         event.preventDefault(); //prevents form from actually being submitted
+    }
+    
+    handleSliderChange(percent) {
+        this.setState({percentRoute: percent});
+        console.log(this.state.percentRoute);
     }
 
     render() {
@@ -60,7 +66,7 @@ class InputForm extends React.Component {
                     Distance (Percent of Route):
                 </label>
                 <div className="slidecontainer">
-                    <Slider />
+                    <Slider onSliderChange = {this.handleSliderChange}/>
                 </div>
                 <input type="submit" value="Find Route" />
             </form>

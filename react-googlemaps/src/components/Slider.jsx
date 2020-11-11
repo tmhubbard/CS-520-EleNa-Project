@@ -11,9 +11,8 @@ class Slider extends React.Component {
     }
 
     handleOnChange(event) {
-        this.setState({
-            value: event.target.value
-        });
+        this.setState({value: event.target.value});
+        this.props.onSliderChange(event.target.value);
     }
 
     render() {

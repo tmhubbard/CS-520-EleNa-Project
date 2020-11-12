@@ -52,7 +52,7 @@ class InputForm extends React.Component {
             endAddress: value,
             endLatLng: latLng
         });
-        console.log(this.state.endLatLng);
+        // console.log(this.state.endLatLng);
     };
     
       

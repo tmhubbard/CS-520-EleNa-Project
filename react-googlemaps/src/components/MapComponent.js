@@ -25,8 +25,12 @@ export class MapComponent extends Component {
       isStartingMarkerShown: true,
       startingMarkerPosition: location
     });
-    console.log(location);
+    //callback function to Display
+    this.props.onStartChange(location);
+    //console.log(location);
     map.panTo(location);
+    //this is how we turn a google maps api latLng object to a readable JSON object
+    //var object = JSON.stringify(ev.latLng.toJSON(), null, 2);
   };
 
   handleMapRightClick = (ref, map, ev) => {
@@ -35,19 +39,21 @@ export class MapComponent extends Component {
       isEndMarkerShown: true,
       endMarkerPosition: location
     });
-    console.log(location);
+    //callback function to Display
+    this.props.onEndChange(location);
+    //console.log(location);
     map.panTo(location);
   };
 
   onStartingMarkerDragEnd = (coord) => {
     const { latLng } = coord;
-    
+
     this.setState({
       isStartingMarkerShown: true,
       startingMarkerPosition: latLng
     });
-    // console.log(latLng);
-
+    this.props.onStartChange(latLng);
+    console.log(latLng);
   };
 
   onEndMarkerDragEnd = (coord) => {
@@ -57,9 +63,17 @@ export class MapComponent extends Component {
       isEndMarkerShown: true,
       endMarkerPosition: latLng
     });
-    // console.log(latLng);
-
+    this.props.onEndChange(latLng);
+    console.log(latLng);
   };
+
+  receiveStartPoint(props) {
+    this.setState({startingMarkerPosition: props.startLocation});
+  }
+
+  receiveEndPoint(props) {
+    this.setState({endMarkerPosition: props.endLocation});
+  }
 
 
 

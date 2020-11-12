@@ -5,8 +5,8 @@ class InputForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            startPoint: [],
-            endPoint: [],
+            startPoint: null,
+            endPoint: null,
             elevationType: "min",
             percentRoute: 10
         };
@@ -21,10 +21,19 @@ class InputForm extends React.Component {
         const value = target.value;
         const name = target.name;
         //console.log(value);
-
         this.setState({
             [name]: value
         });
+
+        if(name === "startPoint"){
+            this.props.onStartChange(value);
+        }
+        else if(name === "endPoint"){
+            this.props.onEndChange(value);
+        }
+        else if(name === "elevationType"){
+            this.props.onPercentChange(value);
+        }
     }
 
     handleSubmit(event) {
@@ -34,7 +43,8 @@ class InputForm extends React.Component {
     
     handleSliderChange(percent) {
         this.setState({percentRoute: percent});
-        console.log(this.state.percentRoute);
+        this.props.onPercentChange(percent);
+        //console.log(this.state.percentRoute);
     }
 
     render() {
@@ -58,7 +68,7 @@ class InputForm extends React.Component {
                     <br />
                     <input type="radio" id="min" name="elevationType" value="min" onChange={this.handleChange}/>
                     <label htmlFor="min">Minimum Elevation</label>
-                    <input type="radio" id="max" name="elevationType" value="max"/>
+                    <input type="radio" id="max" name="elevationType" value="max" onChange={this.handleChange}/>
                     <label htmlFor="max">Maximum Elevation</label>
                 </label>
                 <br />

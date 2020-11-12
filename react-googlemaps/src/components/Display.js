@@ -22,10 +22,12 @@ class Display extends React.Component {
     //callback functions
     handleMapStartChange(location) {
         this.setState({startPoint : location});
+        console.log(location);
     }
 
     handleMapEndChange(location) {
         this.setState({endPoint: location});
+        console.log(location);
     }
 
     handleInputStartChange(location) {
@@ -50,13 +52,15 @@ class Display extends React.Component {
         return (
             <div>
                 <MapComponent onStartChange = {this.handleMapStartChange} 
-                    onEndChange = {this.handleMapEndChange}/>
+                    onEndChange = {this.handleMapEndChange}
+                    startLocation = {this.state.startPoint}
+                    endLocation = {this.state.endPoint}/>
 
                 <InputForm onStartChange = {this.handleInputStartChange}
                     onEndChange = {this.handleInputEndChange}
                     onTypeChange = {this.handleInputTypeChange}
                     onPercentChange = {this.handleInputPercentChange}
-                    style={{float: 'rtight'}} />
+                    style={{float: 'right'}} />
             </div>
         );
     }

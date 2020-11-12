@@ -56,7 +56,7 @@ class Display extends React.Component {
                     onEndChange = {this.handleInputEndChange}
                     onTypeChange = {this.handleInputTypeChange}
                     onPercentChange = {this.handleInputPercentChange}
-                    style={{float: 'rtight'}} />
+                    />
             </div>
         );
     }

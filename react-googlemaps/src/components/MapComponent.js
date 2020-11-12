@@ -69,7 +69,7 @@ export class MapComponent extends Component {
     //   { lat: 42.37314905741523, lng: -72.51986784205097 }
     // ];
     return (
-      <div style = {{position: 'absolute', width: '82%', height: '100%'}}>
+      <div style = {{float: 'right', width: '75%', height: '100%'}}>
         <Map
           google={this.props.google}
           zoom={14}

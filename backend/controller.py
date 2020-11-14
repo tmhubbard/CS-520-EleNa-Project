@@ -7,11 +7,12 @@ import requests
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from PIL import Image
+import os
 
 class controller(object):
 
     def _init_(self):
-        self.model = None #
+        self.model = None
         self.view = None
 
     def set_model(self, model):
@@ -42,19 +43,17 @@ class controller(object):
 
 def get_map(address):
     apikey = "AIzaSyBmg_5waDYCtmUW3YCNJ75dUWc6_5_i8wE"
-    url = "https://maps.googleapis.com/maps/api/staticmap?center=+"+str(address)+"&zoom=14&size=400x400&key="
-    respond = requests.get(url + apikey)
-    imagex = respond.content
+    url = "https://maps.googleapis.com/maps/api/staticmap?center=+"+str(address)+"&zoom=14&size=640x640&style=feature:landscape.man_made|element:labels|color:0xffffff&key="
+    response = requests.get(url + apikey)
+    imagex = response.content
     image_data = imagex  # byte values of the image
-    image_plot = plt.imread(image_data)
-    imgplot = plt.imshow(image_plot)
+    open('Test_Buildings_map.png', 'wb').write(image_data)
+    plt.imshow(mpimg.imread('Test_Buildings_map.png'))
     plt.show()
-    # open('test_map.png', 'wb').write(image_data)
+    os.remove('Test_Buildings_map.png')
+get_map("UMass Amherst")
 
-
-get_map("Berkeley,CA")
-
-
+breakpoint()
 
 def elevation(location):
     lat = location[0]

@@ -137,13 +137,13 @@ def boundaryBoxPoints(origin, destination, c, spacing):
 	rotatedPoints = [rotatePoint(point, angleRad) for point in goodPoints]
 	newPoints = [offsetCoordinates(origin, point) for point in rotatedPoints]
 
-	# # Uncomment this for visual aids
-	# plt.plot(pointA[0], pointA[1], "go", markersize=15)
-	# plt.plot(pointB[0], pointB[1], "ro", markersize=15)
-	# plt.plot(longDiff, latDiff, "r+", markersize=20)
-	# for point in rotatedPoints:
-	# 	plt.plot(point[0], point[1], "go", markersize=2)
-	# plt.show()
+	# Uncomment this for visual aids
+	plt.plot(pointA[0], pointA[1], "go", markersize=15)
+	plt.plot(pointB[0], pointB[1], "ro", markersize=15)
+	plt.plot(longDiff, latDiff, "r+", markersize=20)
+	for point in rotatedPoints:
+		plt.plot(point[0], point[1], "go", markersize=2)
+	plt.show()
 
 
 	return newPoints

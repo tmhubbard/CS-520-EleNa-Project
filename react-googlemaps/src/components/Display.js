@@ -60,6 +60,8 @@ class Display extends React.Component {
                     onEndChange = {this.handleInputEndChange}
                     onTypeChange = {this.handleInputTypeChange}
                     onPercentChange = {this.handleInputPercentChange}
+                    startLocation = {this.state.startPoint}
+                    endLocation = {this.state.endPoint}
                     style={{float: 'right'}} />
             </div>
         );

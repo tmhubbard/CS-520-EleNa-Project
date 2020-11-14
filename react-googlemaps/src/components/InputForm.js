@@ -88,6 +88,14 @@ class InputForm extends React.Component {
         //console.log(this.state.percentRoute);
     }
 
+    receiveStartPoint(props) {
+        this.setState({startingMarkerPosition: props.startLatLng});
+      }
+    
+    receiveEndPoint(props) {
+        this.setState({endMarkerPosition: props.endLatLng});
+    }
+
     render() {
         return (
             <div style={{float: 'left', width: '25%', height: '100%'}}>

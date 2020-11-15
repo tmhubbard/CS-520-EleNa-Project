@@ -5,8 +5,8 @@ class Node:
     def __init__(
             self, 
             id: int, 
-            latitude: float, longitude: float, 
-            elevation: float,
+            latitude: float = None, longitude: float = None, 
+            elevation: float = None,
             neighbors: list = None):
         self._id = id
         self._latitude = latitude
@@ -55,6 +55,14 @@ class Node:
         self._neighbors = neighbors
     
     def as_json(self) -> dict:
+        return {
+            "id": self._id,
+            "latitude": self._latitude,
+            "longitude": self._longitude,
+            "elevation": self._elevation
+        }
+    
+    def get_content(self) -> dict:
         return {
             "id": self._id,
             "latitude": self._latitude,

@@ -27,4 +27,4 @@ class MakeGraphTest(unittest.TestCase):
         assert shortest_path == expected_shortest_path, \
             f'Expected path = {expected_shortest_path}, got {shortest_path}'
         assert shortest_path_length == expected_shortest_path_length, \
-            f'Expected length = {expected_shortest_path}, got {shortest_path}'
+            f'Expected length = {expected_shortest_path_length}, got {shortest_path_length}'

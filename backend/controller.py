@@ -30,6 +30,7 @@ def get_elevation(location:(float, float))-> float:
 
 #from the list of sample_points validates and adds elevation for each location
 #return type is valid points list( (lat, lng , elevation) )
+
 def get_validNodes(sample_points ):
     # hard coding the cx , cy for osmnx graph
     cx , cy =42.389555, -72.528127 # location of DU BOYS Library
@@ -60,14 +61,6 @@ def get_validNodes(sample_points ):
 
 def get_Graph(Nodes):
     return make_graph(Nodes)
-
-
-
-
-
-
-
-
 
 
 

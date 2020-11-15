@@ -1,13 +1,12 @@
-from flask import Flask
-import controller
-import model
+from flask import Flask, jsonify
+# import controller
+# import model
 
 app= Flask(__name__)
 
-
-@app.route('/')
+@app.route('/getRoute', methods=['GET'])
 def test1():
-    return 'Testing'
+    return jsonify(value='Testing')
 
 
 if __name__ == '__main__':

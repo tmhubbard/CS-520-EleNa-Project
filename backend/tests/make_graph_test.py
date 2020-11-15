@@ -19,6 +19,8 @@ class MakeGraphTest(unittest.TestCase):
 
         G = make_graph(list_of_node_objects)
         expected_shortest_path = [1, 2, 4]
+        # 'astar_path' function gets the list of nodes in the 
+        # shortest path between source and target using the A* (“A-star”) algorithm.
         shortest_path = nx.astar_path(G, 1, 4) 
         assert shortest_path == expected_shortest_path, \
             f'Expected path = {expected_shortest_path}, got {shortest_path}'

@@ -7,7 +7,7 @@ from model.graph.make_graph import make_graph
 class MakeGraphTest(unittest.TestCase):
     
     def test_astar_search(self):
-        """Test if a minimum path is returned on a directed graph.
+        """Test astar search on a directed graph to get the minimum path.
         """
         # neighbors = (neighborID, distance)
         list_of_node_objects = [

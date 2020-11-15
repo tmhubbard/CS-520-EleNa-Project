@@ -44,16 +44,24 @@ def get_validNodes(sample_points ):
         if node_dst<10 or node_dst>100 :#need to tune this
 
             node = Node(id= index,latitude= point[0], longitude = point[1], elevation = get_elevation(point) , neighbors = None )
-
+            print(node.get_content())
             Nodes.append(node)
 
     return Nodes
 
 #testing
-sp =  [[42.386690, -72.525936] ,  [42.385544, -72.525861]]
-valid_nodes = get_validNodes(sp)
-graph = make_graph(valid_nodes)
-print(type(graph))
+# sp =  [[42.386690, -72.525936] ,  [42.385544, -72.525861]]
+# valid_nodes = get_validNodes(sp)
+# graph = make_graph(valid_nodes)
+# print(type(graph))
+
+
+
+
+def get_Graph(Nodes):
+    return make_graph(Nodes)
+
+
 
 
 

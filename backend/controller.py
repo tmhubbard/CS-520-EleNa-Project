@@ -6,14 +6,9 @@
 # =========================
 import requests
 import osmnx as ox
-import json
-import urllib
-#from calcBoundary import boundaryBoxPoints as bb_points
+from model.graph.node import Node
+from model.graph.make_graph import make_graph
 import requests
-# import osmnx as ox
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-from PIL import Image
 import os
 
 
@@ -35,27 +30,30 @@ def get_elevation(location:(float, float))-> float:
 
 #from the list of sample_points validates and adds elevation for each location
 #return type is valid points list( (lat, lng , elevation) )
-def make_nodes(sample_points: list ):
+def get_validNodes(sample_points ):
     # hard coding the cx , cy for osmnx graph
     cx , cy =42.389555, -72.528127 # location of DU BOYS Library
     osmnx_graph = get_osmnx_graph(cx,cy)
     ox.plot.plot_graph(osmnx_graph)
     Nodes = []
 
-    for point in sample_points:  #point is (lat, lng)
+    for index, point in enumerate(sample_points):  #point is (lat, lng)
 
         node_dst = ox.distance.get_nearest_node(osmnx_graph, point, method='haversine', return_dist= True)[1]
-
         #check for valid range ( 10m>node_dst > 100m)
         if node_dst<10 or node_dst>100 :#need to tune this
-            point = (point[0], point[1], get_elevation(point)) #add the elevation
-            Nodes.append(point)
+
+            node = Node(id= index,latitude= point[0], longitude = point[1], elevation = get_elevation(point) , neighbors = None )
+
+            Nodes.append(node)
+
     return Nodes
 
-#testing for one invalid and one valid point
-# sample_points = [(42.386690, -72.525936) , (42.385544, -72.525861)]
-# print(make_nodes(sample_points))
-
+#testing
+sp =  [[42.386690, -72.525936] ,  [42.385544, -72.525861]]
+valid_nodes = get_validNodes(sp)
+graph = make_graph(valid_nodes)
+print(type(graph))
 
 
 

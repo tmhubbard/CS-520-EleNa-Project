@@ -6,10 +6,14 @@ class Display extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            isStartingMarkerShown: false,
+            isEndMarkerShown: false,
             startPoint: null,
             endPoint: null,
             elevationType: "min",
-            percentRoute: 10
+            percentRoute: 10,
+            startAddress: '',
+            endAddress: ''
         };
 
         this.handleMapStartChange = this.handleMapStartChange.bind(this);
@@ -21,21 +25,27 @@ class Display extends React.Component {
     }
     //callback functions
     handleMapStartChange(location) {
-        this.setState({startPoint : location});
+        this.setState({isStartingMarkerShown: true, startPoint : location});
         console.log(location);
     }
 
     handleMapEndChange(location) {
-        this.setState({endPoint: location});
+        this.setState({isEndMarkerShown: true, endPoint: location});
         console.log(location);
     }
 
-    handleInputStartChange(location) {
-        this.setState({startPoint: location});
+    handleInputStartChange(location, address) {
+        this.setState({isStartingMarkerShown: true, startPoint: location,
+        startAddress: address});
+        console.log(location);
+        console.log(address);
     }
 
-    handleInputEndChange(location) {
-        this.setState({endPoint : location});
+    handleInputEndChange(location, address) {
+        this.setState({isEndMarkerShown: true, endPoint : location,
+        endAddress: address});
+        console.log(location);
+        console.log(address);
     }
 
     handleInputTypeChange(type) {
@@ -53,14 +63,20 @@ class Display extends React.Component {
             <div>
                 <MapComponent onStartChange = {this.handleMapStartChange} 
                     onEndChange = {this.handleMapEndChange}
-                    startLocation = {this.state.startPoint}
-                    endLocation = {this.state.endPoint}/>
+                    startPoint = {this.state.startPoint}
+                    endPoint = {this.state.endPoint}
+                    isStartingMarkerShown = {this.state.isStartingMarkerShown}
+                    isEndMarkerShown = {this.state.isEndMarkerShown}/>
 
                 <InputForm onStartChange = {this.handleInputStartChange}
                     onEndChange = {this.handleInputEndChange}
                     onTypeChange = {this.handleInputTypeChange}
                     onPercentChange = {this.handleInputPercentChange}
-                    style={{float: 'right'}} />
+                    startLocation = {this.state.startPoint}
+                    endLocation = {this.state.endPoint}
+                    // startAddress = {this.state.startAddress}
+                    // endAddress = {this.state.endAddress}
+                />
             </div>
         );
     }

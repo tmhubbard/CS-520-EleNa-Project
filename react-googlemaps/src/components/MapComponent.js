@@ -9,62 +9,66 @@ const mapStyles = {
 export class MapComponent extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      isStartingMarkerShown: false,
-      startingMarkerPosition: null,
-      isEndMarkerShown: false,
-      endMarkerPosition: null
-    };
+    // this.state = {
+    //   isStartingMarkerShown: false,
+    //   startingMarkerPosition: null,
+    //   isEndMarkerShown: false,
+    //   endMarkerPosition: null
+    // };
     this.handleMapClick = this.handleMapClick.bind(this);
     this.handleMapRightClick = this.handleMapRightClick.bind(this);
   }
 
   handleMapClick = (ref, map, ev) => {
     const location = ev.latLng;
+    var coordinate = {lat: location.lat(), lng: location.lng()};  //creating latlng object in {lat, lng} format
     this.setState({
       isStartingMarkerShown: true,
-      startingMarkerPosition: location
+      startingMarkerPosition: coordinate
     });
     //callback function to Display
-    this.props.onStartChange(location);
-    //console.log(location);
+    this.props.onStartChange(coordinate);
     map.panTo(location);
+
+
+
     //this is how we turn a google maps api latLng object to a readable JSON object
     //var object = JSON.stringify(ev.latLng.toJSON(), null, 2);
   };
 
   handleMapRightClick = (ref, map, ev) => {
     const location = ev.latLng;
+    var coordinate = {lat: location.lat(), lng: location.lng()};  //creating latlng object in {lat, lng} format
     this.setState({
       isEndMarkerShown: true,
-      endMarkerPosition: location
+      endMarkerPosition: coordinate
     });
     //callback function to Display
-    this.props.onEndChange(location);
+    this.props.onEndChange(coordinate);
     //console.log(location);
     map.panTo(location);
   };
 
   onStartingMarkerDragEnd = (coord) => {
     const { latLng } = coord;
-
+    var coordinate = {lat: latLng.lat(), lng: latLng.lng()};  //creating latlng object in {lat, lng} format
     this.setState({
       isStartingMarkerShown: true,
-      startingMarkerPosition: latLng
+      startingMarkerPosition: coordinate
     });
-    this.props.onStartChange(latLng);
-    console.log(latLng);
+    this.props.onStartChange(coordinate);
+    // console.log(latLng);
   };
 
   onEndMarkerDragEnd = (coord) => {
     const { latLng } = coord;
-    
+    var coordinate = {lat: latLng.lat(), lng: latLng.lng()};  //creating latlng object in {lat, lng} format
     this.setState({
       isEndMarkerShown: true,
-      endMarkerPosition: latLng
+      endMarkerPosition: coordinate
     });
-    this.props.onEndChange(latLng);
-    console.log(latLng);
+    this.props.onEndChange(coordinate);
+    // console.log(latLng);
   };
 
   receiveStartPoint(props) {
@@ -106,16 +110,16 @@ export class MapComponent extends Component {
                 strokeWeight: 2,
             }}
             /> */}
-          {this.state.isStartingMarkerShown && 
+          {this.props.isStartingMarkerShown && 
           <Marker 
-          position={this.state.startingMarkerPosition}
+          position={this.props.startPoint}
           draggable={true}
           label="A"
           onDragend={(t, map, coord) => this.onStartingMarkerDragEnd(coord)}
           />}
-          {this.state.isEndMarkerShown && 
+          {this.props.isEndMarkerShown && 
           <Marker 
-          position={this.state.endMarkerPosition}
+          position={this.props.endPoint}
           draggable={true}
           label="B"
           onDragend={(t, map, coord) => this.onEndMarkerDragEnd(coord)}

@@ -12,8 +12,6 @@ class InputForm extends React.Component {
             endPoint: null,
             elevationType: "min",
             percentRoute: 10,
-            startLatLng: null,
-            endLatLng: null,
             startAddress: '',
             endAddress: ''
         };
@@ -36,9 +34,10 @@ class InputForm extends React.Component {
         const latLng = await getLatLng(results[0]);
         this.setState({
             startAddress: value,
-            startLatLng: latLng
+            startPoint: latLng
         });
-        // console.log(this.state.startLatLng);
+        this.props.onStartChange(latLng, value);
+        // console.log(this.state.startPoint);
     };
 
     handleEndAutocompleteChange = endAddress => {
@@ -50,9 +49,10 @@ class InputForm extends React.Component {
         const latLng = await getLatLng(results[0]);
         this.setState({
             endAddress: value,
-            endLatLng: latLng
+            endPoint: latLng
         });
-        // console.log(this.state.endLatLng);
+        this.props.onEndChange(latLng, value);
+        // console.log(this.state.endPoint);
     };
     
       
@@ -66,13 +66,7 @@ class InputForm extends React.Component {
             [name]: value
         });
 
-        if(name === "startPoint"){
-            this.props.onStartChange(value);
-        }
-        else if(name === "endPoint"){
-            this.props.onEndChange(value);
-        }
-        else if(name === "elevationType"){
+        if(name === "elevationType"){
             this.props.onPercentChange(value);
         }
     }

@@ -1,10 +1,12 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+
 # import controller
 # import model
 
 app = Flask(__name__)
 CORS(app)
+
 
 # Command to test a post request
     # curl -H "Content-type: application/json" -d '{ "origin_lat":"123", "min_max":"min" }' 'http://127.0.0.1:5000/getRoute'

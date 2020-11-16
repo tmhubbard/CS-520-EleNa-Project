@@ -38,18 +38,27 @@ def get_validNodes(sample_points , center, radius):
     osmnx_graph = get_osmnx_graph(cx,cy, radius)
     #ox.plot.plot_graph(osmnx_graph)
     Nodes = []
+    nodes_ids = []
 
     for index, point in enumerate(sample_points):  #point is (lat, lng)
         location = (point.latitude, point.longitude)
         node_dst = ox.distance.get_nearest_node(osmnx_graph, location, method='haversine', return_dist= True)[1]
-        nearest_point_ID = ox.distance.get_nearest_node(osmnx_graph, location, method='haversine', return_dist= True)[0]
+        # nearest_point_ID = ox.distance.get_nearest_node(osmnx_graph, location, method='haversine', return_dist= True)[0]
 
         #check for valid range ( 10m>node_dst > 100m)
         if node_dst<5 or node_dst>50 :#need to tune this
-
             point.elevation = get_elevation(location) #add elevation
             Nodes.append(point)
-
+            nodes_ids.append(point.id)
+    
+    for node in Nodes:
+        valid_neighbors = []
+        for neighbor in node.neighbors:
+            neighbor_id = neighbor[0]
+            neighbor_dist = neighbor[1]
+            if neighbor_id in nodes_ids:
+                valid_neighbors.append((neighbor_id, neighbor_dist))      
+        node.neighbors = valid_neighbors          
     return Nodes
 
 #testing
@@ -66,13 +75,14 @@ center = c[0]
 radius = c[1]
 
 
-# valid_nodes = get_validNodes(nodes , center, radius)
+def get_Graph(Nodes):
+    return make_graph(Nodes)
+
+valid_nodes = get_validNodes(nodes , center, radius)
 # for point in valid_nodes:
 #     print(str(point.latitude) + "," +  str(point.longitude))
 
 
-def get_Graph(Nodes):
-    return make_graph(Nodes)
 
 
 

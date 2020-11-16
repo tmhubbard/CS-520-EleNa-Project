@@ -75,17 +75,21 @@ center = c[0]
 radius = c[1]
 
 
-def get_Graph(Nodes):
-    return make_graph(Nodes)
-
 valid_nodes = get_validNodes(nodes , center, radius)
+# breakpoint()
+G = make_graph(valid_nodes)
+# shortest_path = nx.astar_path(G, source=, target=4)
 # for point in valid_nodes:
 #     print(str(point.latitude) + "," +  str(point.longitude))
 
 
+import networkx as nx
+shortest_path = nx.astar_path(G, source=1, target=4)
+shortest_path_length = nx.astar_path_length(G, source=1, target=4)
 
-
-
+import matplotlib.pyplot as plt
+nx.draw(G, with_labels=True)
+plt.show()
 
 
 

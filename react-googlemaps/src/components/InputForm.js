@@ -7,15 +7,6 @@ import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-au
 class InputForm extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            startPoint: null,
-            endPoint: null,
-            elevationType: "min",
-            percentRoute: 10,
-            startAddress: '',
-            endAddress: ''
-        };
-
         this.handleStartAutocompleteChange = this.handleStartAutocompleteChange.bind(this);
         this.handleStartSelect = this.handleStartSelect.bind(this);
         this.handleEndAutocompleteChange = this.handleEndAutocompleteChange.bind(this);
@@ -26,7 +17,7 @@ class InputForm extends React.Component {
     }
 
     handleStartAutocompleteChange = startAddress => {
-        this.setState({ startAddress });
+        this.props.onStartChange(null, startAddress);
     };
 
     handleStartSelect = async value => {
@@ -41,7 +32,7 @@ class InputForm extends React.Component {
     };
 
     handleEndAutocompleteChange = endAddress => {
-        this.setState({ endAddress });
+        this.props.onStartChange(null, endAddress);
     };
 
     handleEndSelect = async value => {
@@ -90,7 +81,7 @@ class InputForm extends React.Component {
                     Start Point
                     <br />
                     <PlacesAutocomplete
-                        value={this.state.startAddress}
+                        value={this.props.startAddress}
                         onChange={this.handleStartAutocompleteChange}
                         onSelect={this.handleStartSelect}
                     >
@@ -134,7 +125,7 @@ class InputForm extends React.Component {
                     End Point
                     <br />
                     <PlacesAutocomplete
-                        value={this.state.endAddress}
+                        value={this.props.endAddress}
                         onChange={this.handleEndAutocompleteChange}
                         onSelect={this.handleEndSelect}
                     >

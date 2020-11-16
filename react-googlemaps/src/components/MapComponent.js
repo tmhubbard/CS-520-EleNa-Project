@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Map, GoogleApiWrapper, Marker, Polyline } from 'google-maps-react';
+import Geocode from 'react-geocode';
+
 
 const mapStyles = {
   width: '100%',
@@ -9,25 +11,26 @@ const mapStyles = {
 export class MapComponent extends Component {
   constructor(props) {
     super(props);
-    // this.state = {
-    //   isStartingMarkerShown: false,
-    //   startingMarkerPosition: null,
-    //   isEndMarkerShown: false,
-    //   endMarkerPosition: null
-    // };
     this.handleMapClick = this.handleMapClick.bind(this);
     this.handleMapRightClick = this.handleMapRightClick.bind(this);
   }
 
   handleMapClick = (ref, map, ev) => {
     const location = ev.latLng;
-    var coordinate = {lat: location.lat(), lng: location.lng()};  //creating latlng object in {lat, lng} format
-    this.setState({
-      isStartingMarkerShown: true,
-      startingMarkerPosition: coordinate
-    });
+    var coordinate = {lat: location.lat(), lng: location.lng()};  //creating latlng object in {lat, lng} format    
+    let address = "";
+    Geocode.setApiKey("AIzaSyCyrU7Z1OXQxOpvVMsQVk1FZvWWb3R3ssA");
+    Geocode.fromLatLng(location.lat(), location.lng()).then(
+      response => {
+        address = response.results[0].formatted_address;
+        this.props.onStartChange(coordinate, address);
+      },
+      error => {
+        console.error(error);
+      }
+    );
     //callback function to Display
-    this.props.onStartChange(coordinate);
+    
     map.panTo(location);
 
 
@@ -38,36 +41,56 @@ export class MapComponent extends Component {
 
   handleMapRightClick = (ref, map, ev) => {
     const location = ev.latLng;
-    var coordinate = {lat: location.lat(), lng: location.lng()};  //creating latlng object in {lat, lng} format
-    this.setState({
-      isEndMarkerShown: true,
-      endMarkerPosition: coordinate
-    });
+    var coordinate = {lat: location.lat(), lng: location.lng()};  //creating latlng object in {lat, lng} format    
+    let address = "";
+    Geocode.setApiKey("AIzaSyCyrU7Z1OXQxOpvVMsQVk1FZvWWb3R3ssA");
+    Geocode.fromLatLng(location.lat(), location.lng()).then(
+      response => {
+        address = response.results[0].formatted_address;
+        this.props.onEndChange(coordinate, address);
+      },
+      error => {
+        console.error(error);
+      }
+    );
     //callback function to Display
-    this.props.onEndChange(coordinate);
+    
     //console.log(location);
     map.panTo(location);
   };
 
   onStartingMarkerDragEnd = (coord) => {
     const { latLng } = coord;
-    var coordinate = {lat: latLng.lat(), lng: latLng.lng()};  //creating latlng object in {lat, lng} format
-    this.setState({
-      isStartingMarkerShown: true,
-      startingMarkerPosition: coordinate
-    });
-    this.props.onStartChange(coordinate);
+    var coordinate = {lat: latLng.lat(), lng: latLng.lng()};  //creating latlng object in {lat, lng} format    
+    let address = "";
+    Geocode.setApiKey("AIzaSyCyrU7Z1OXQxOpvVMsQVk1FZvWWb3R3ssA");
+    Geocode.fromLatLng(latLng.lat(), latLng.lng()).then(
+      response => {
+        address = response.results[0].formatted_address;
+        this.props.onStartChange(coordinate, address);
+      },
+      error => {
+        console.error(error);
+      }
+    );
     // console.log(latLng);
   };
 
   onEndMarkerDragEnd = (coord) => {
     const { latLng } = coord;
     var coordinate = {lat: latLng.lat(), lng: latLng.lng()};  //creating latlng object in {lat, lng} format
-    this.setState({
-      isEndMarkerShown: true,
-      endMarkerPosition: coordinate
-    });
-    this.props.onEndChange(coordinate);
+    let address = "";
+    Geocode.setApiKey("AIzaSyCyrU7Z1OXQxOpvVMsQVk1FZvWWb3R3ssA");
+    Geocode.fromLatLng(latLng.lat(), latLng.lng()).then(
+      response => {
+        address = response.results[0].formatted_address;
+        this.props.onEndChange(coordinate, address);
+      },
+      error => {
+        console.error(error);
+      }
+    );
+    
     // console.log(latLng);
   };
 
@@ -92,12 +115,8 @@ export class MapComponent extends Component {
           google={this.props.google}
           zoom={14}
           style={mapStyles}
-          initialCenter={
-            {
-              lat: 42.3732,
-              lng: -72.5199
-            }
-          }
+          initialCenter= {{lat: 42.3732, lng: -72.5199}}
+          center= {this.props.mapCenter}
           onClick={this.handleMapClick}
           onRightclick={this.handleMapRightClick}
         >

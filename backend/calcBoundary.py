@@ -347,6 +347,7 @@ def boundaryBoxPoints(origin, destination, c, spacing):
 
 # Get the coordinates from the front-end
 origin = (42.372391, -72.516950)
-destination = (42.372268, -72.511058)
-
-nodes, center = boundaryBoxPoints(origin, destination, 1.5, 30)
+# destination = (42.372268, -72.511058)
+#
+# nodes, center = boundaryBoxPoints(origin, destination, 1.5, 30)
+# print(center)

@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Map, GoogleApiWrapper, Marker, Polyline } from 'google-maps-react';
+import { Map, GoogleApiWrapper, Marker, Polyline, LatLngBounds } from 'google-maps-react';
 import Geocode from 'react-geocode';
 
 
 const mapStyles = {
-  width: '100%',
+  width: '75%',
   height: '100%'
 };
 
@@ -103,10 +103,27 @@ export class MapComponent extends Component {
 
 
   render() {
-    // const pathCoordinates = [
-    //   { lat: 42.37380692489817, lng: -72.53280681833881 },
-    //   { lat: 42.37314905741523, lng: -72.51986784205097 }
-    // ];
+    var pathCoordinates = this.props.route;
+    // if(pathCoordinates != null) {
+    //   this.centerAfterRoute();
+    // }
+
+    // const coordinates = [];
+    // var latlng;
+    // if(pathCoordinates != null) {
+    //   for (latlng of pathCoordinates) {
+    //     coordinates.push(<Polyline
+    //       path={latlng}
+    //       geodesic={true}
+    //       options={{
+    //           strokeColor: "#FF2527",
+    //           strokeOpacity: 0.75,
+    //           strokeWeight: 2
+    //       }}/>)
+    //   }
+    //   console.log(coordinates);
+    // }
+    
     return (
       <div style = {{float: 'right', width: '75%', height: '100%'}}>
         <Map
@@ -118,15 +135,19 @@ export class MapComponent extends Component {
           onClick={this.handleMapClick}
           onRightclick={this.handleMapRightClick}
         >
-          {/* <Polyline
-            path={pathCoordinates}
-            geodesic={true}
-            options={{
-                strokeColor: "#ff2527",
-                strokeOpacity: 0.75,
-                strokeWeight: 2,
-            }}
-            /> */}
+          {this.props.renderRoute &&
+          // <div>
+          //   {coordinates}
+          //   </div>
+          <Polyline
+          path={pathCoordinates}
+          geodesic={true}
+          options={{
+              strokeColor: "#FF2527",
+              strokeOpacity: 0.75,
+              strokeWeight: 2
+          }}/>
+          }
           {this.props.isStartingMarkerShown && 
           <Marker 
           position={this.props.startPoint}

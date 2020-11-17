@@ -66,12 +66,16 @@ class Display extends React.Component {
     }
 
     handleSubmit() {
+        var submission = {
+            start_point: this.state.startPoint,
+            end_point: this.state.endPoint,
+            elevation_type: this.state.elevationType,
+            percent_of_distance: this.state.percentRoute,
+        }
+        var JSONsubmission = JSON.stringify(submission);
+        console.log(JSONsubmission);
         //send data to backend
-    }
-
-    latLngtoJSON(latLng) {
-        var object = JSON.stringify(latLng.toJSON(), null, 2);
-        return object;
+        //then request data back?
     }
 
     render() {

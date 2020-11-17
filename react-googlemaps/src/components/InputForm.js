@@ -58,13 +58,13 @@ class InputForm extends React.Component {
         });
 
         if(name === "elevationType"){
-            this.props.onPercentChange(value);
+            this.props.onTypeChange(value);
         }
     }
 
     handleSubmit(event) {
-        this.props.submit();
         event.preventDefault(); //prevents form from actually being submitted
+        this.props.submit();
     }
     
     handleSliderChange(percent) {
@@ -76,7 +76,7 @@ class InputForm extends React.Component {
     render() {
         return (
             <div style={{float: 'left', width: '25%', height: '100%'}}>
-            <form>
+            <form onSubmit = {this.handleSubmit}>
                 <label>
                     Start Point
                     <br />
@@ -180,7 +180,7 @@ class InputForm extends React.Component {
                 <div className="slidecontainer">
                     <Slider onSliderChange = {this.handleSliderChange}/>
                 </div>
-                <input type="submit" value="Find Route" />
+                <input type="submit" value="Find Route"/>
             </form>
             </div>
         );

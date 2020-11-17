@@ -63,7 +63,7 @@ class InputForm extends React.Component {
     }
 
     handleSubmit(event) {
-        //console.log("form submitted");
+        this.props.submit();
         event.preventDefault(); //prevents form from actually being submitted
     }
     

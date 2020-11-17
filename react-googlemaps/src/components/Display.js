@@ -1,6 +1,7 @@
 import React from 'react';
 import InputForm from './InputForm';
 import MapComponent from './MapComponent';
+import RouteStats from './RouteStats';
 
 class Display extends React.Component {
     constructor(props) {
@@ -14,7 +15,9 @@ class Display extends React.Component {
             elevationType: "min",
             percentRoute: 10,
             startAddress: '',
-            endAddress: ''
+            endAddress: '',
+            totalElevation: 0,
+            totalDistance:  0
         };
 
         this.handleMapStartChange = this.handleMapStartChange.bind(this);
@@ -23,6 +26,7 @@ class Display extends React.Component {
         this.handleInputEndChange = this.handleInputEndChange.bind(this);
         this.handleInputTypeChange = this.handleInputTypeChange.bind(this);
         this.handleInputPercentChange = this.handleInputPercentChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
     //callback functions
     handleMapStartChange(location, address) {
@@ -61,6 +65,15 @@ class Display extends React.Component {
         console.log(percent);
     }
 
+    handleSubmit() {
+        //send data to backend
+    }
+
+    latLngtoJSON(latLng) {
+        var object = JSON.stringify(latLng.toJSON(), null, 2);
+        return object;
+    }
+
     render() {
         return (
             <div>
@@ -71,7 +84,7 @@ class Display extends React.Component {
                     isStartingMarkerShown = {this.state.isStartingMarkerShown}
                     isEndMarkerShown = {this.state.isEndMarkerShown}
                     mapCenter = {this.state.mapCenter}/>
-
+                <div>
                 <InputForm onStartChange = {this.handleInputStartChange}
                     onEndChange = {this.handleInputEndChange}
                     onTypeChange = {this.handleInputTypeChange}
@@ -80,7 +93,11 @@ class Display extends React.Component {
                     endLocation = {this.state.endPoint}
                     startAddress = {this.state.startAddress}
                     endAddress = {this.state.endAddress}
+                    submit = {this.handleSubmit}
                 />
+                <RouteStats elevation = {this.state.totalElevation}
+                    distance = {this.state.totalDistance}/>
+                </div>
             </div>
         );
     }

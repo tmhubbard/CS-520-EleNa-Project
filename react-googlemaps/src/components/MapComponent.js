@@ -33,8 +33,6 @@ export class MapComponent extends Component {
     
     map.panTo(location);
 
-
-
     //this is how we turn a google maps api latLng object to a readable JSON object
     //var object = JSON.stringify(ev.latLng.toJSON(), null, 2);
   };

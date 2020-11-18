@@ -7,7 +7,7 @@ class Display extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            mapCenter: {lat: 42.3732, lng: -72.5199},
+            mapcenter: {lat: 42.3732, lng: -72.5199},
             route: null,
             renderRoute: false,
             isStartingMarkerShown: false,
@@ -38,21 +38,20 @@ class Display extends React.Component {
     }
 
     handleMapEndChange(location, address) {
-        this.setState({isEndMarkerShown: true, endPoint: location, endAddress: address, mapCenter: location});
+        this.setState({isEndMarkerShown: true, endPoint: location, endAddress: address, mapcenter: location});
         console.log(location);
         console.log(address);
     }
 
     handleInputStartChange(location, address) {
         this.setState({isStartingMarkerShown: true, startPoint: location,
-        startAddress: address, mapCenter: location});
+        startAddress: address});
         console.log(location);
         console.log(address);
     }
 
     handleInputEndChange(location, address) {
-        this.setState({isEndMarkerShown: true, endPoint : location,
-        endAddress: address, mapCenter: location});
+        this.setState({isEndMarkerShown: true, endPoint : location, endAddress: address});
         console.log(location);
         console.log(address);
     }
@@ -68,7 +67,7 @@ class Display extends React.Component {
     }
 
     // handleRecenter(location) {
-    //     this.setState({mapCenter: location});
+    //     this.setState({mapcenter: location});
     //     console.log(location);
     // }
 
@@ -106,7 +105,7 @@ class Display extends React.Component {
             }
             var coordinate = {lat: bounds.getCenter().lat(), lng: bounds.getCenter().lng()};
             // console.log(coordinate);
-            this.setState({mapCenter: coordinate})
+            this.setState({mapcenter: coordinate})
         });
         
         
@@ -121,10 +120,10 @@ class Display extends React.Component {
                     onEndChange = {this.handleMapEndChange}
                     startPoint = {this.state.startPoint}
                     endPoint = {this.state.endPoint}
-                    recenter = {this.handleRecenter}
+                    // recenter = {this.handleRecenter}
                     isStartingMarkerShown = {this.state.isStartingMarkerShown}
                     isEndMarkerShown = {this.state.isEndMarkerShown}
-                    mapCenter = {this.state.mapCenter}
+                    mapcenter = {this.state.mapcenter}
                     renderRoute = {this.state.renderRoute}
                     route = {this.state.route}
                     />
@@ -139,8 +138,8 @@ class Display extends React.Component {
                     endAddress = {this.state.endAddress}
                     submit = {this.handleSubmit}
                 />
-                <RouteStats elevation = {this.state.totalElevation}
-                    distance = {this.state.totalDistance}/>
+                {/* <RouteStats elevation = {this.state.totalElevation}
+                    distance = {this.state.totalDistance}/> */}
                 {/* </div> */}
             </div>
         );

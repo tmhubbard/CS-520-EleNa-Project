@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Map, GoogleApiWrapper, Marker, Polyline, LatLngBounds } from 'google-maps-react';
+import { Map, GoogleApiWrapper, Marker, Polyline } from 'google-maps-react';
 import Geocode from 'react-geocode';
 
 
@@ -104,25 +104,6 @@ export class MapComponent extends Component {
 
   render() {
     var pathCoordinates = this.props.route;
-    // if(pathCoordinates != null) {
-    //   this.centerAfterRoute();
-    // }
-
-    // const coordinates = [];
-    // var latlng;
-    // if(pathCoordinates != null) {
-    //   for (latlng of pathCoordinates) {
-    //     coordinates.push(<Polyline
-    //       path={latlng}
-    //       geodesic={true}
-    //       options={{
-    //           strokeColor: "#FF2527",
-    //           strokeOpacity: 0.75,
-    //           strokeWeight: 2
-    //       }}/>)
-    //   }
-    //   console.log(coordinates);
-    // }
     
     return (
       <div style = {{float: 'right', width: '75%', height: '100%'}}>
@@ -131,7 +112,7 @@ export class MapComponent extends Component {
           zoom={14}
           style={mapStyles}
           initialCenter= {{lat: 42.3732, lng: -72.5199}}
-          center= {this.props.mapCenter}
+          center= {this.props.mapcenter}
           onClick={this.handleMapClick}
           onRightclick={this.handleMapRightClick}
         >

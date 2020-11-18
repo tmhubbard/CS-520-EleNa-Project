@@ -13,11 +13,22 @@ CORS(app)
 
 @app.route('/getRoute', methods=['POST'])
 def get_route():
-    # origin lat, long
-    # dest lat, long
-    # min/max
-    # percentage overhead
+
+    """
+    INCOMING DATA:
+        start_point: {lat: (value) lng: (value)},
+        end_point: {lat: (value) lng: (value)},
+        elevation_type: ("min" or "max"),
+        percent_of_distance: (range of 0-100),
+    """
+    breakpoint()
     request_data = request.get_json(force=True, silent=False)
+
+    # Deserialize Data
+    start_point = request_data['start_point']
+    end_point = request_data['end_point']
+    elevation_type = request_data['elevation_type']
+    percent_of_distance = float(request_data['percent_of_distance'])
 
     # PROCESS request_data
 

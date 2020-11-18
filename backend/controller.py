@@ -59,6 +59,7 @@ def get_validNodes(sample_points , center, radius):
             if neighbor_id in nodes_ids:
                 valid_neighbors.append((neighbor_id, neighbor_dist))      
         node.neighbors = valid_neighbors          
+
     return Nodes
 
 #testing

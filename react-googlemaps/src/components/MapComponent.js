@@ -1,70 +1,95 @@
 import React, { Component } from 'react';
-import { Map, GoogleApiWrapper, Marker, Polyline } from 'google-maps-react';
+import { Map, GoogleApiWrapper, Marker, Polyline, LatLngBounds } from 'google-maps-react';
+import Geocode from 'react-geocode';
+
 
 const mapStyles = {
-  width: '100%',
+  width: '75%',
   height: '100%'
 };
 
 export class MapComponent extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      isStartingMarkerShown: false,
-      startingMarkerPosition: null,
-      isEndMarkerShown: false,
-      endMarkerPosition: null
-    };
     this.handleMapClick = this.handleMapClick.bind(this);
     this.handleMapRightClick = this.handleMapRightClick.bind(this);
   }
 
   handleMapClick = (ref, map, ev) => {
     const location = ev.latLng;
-    this.setState({
-      isStartingMarkerShown: true,
-      startingMarkerPosition: location
-    });
+    var coordinate = {lat: location.lat(), lng: location.lng()};  //creating latlng object in {lat, lng} format    
+    let address = "";
+    Geocode.setApiKey("AIzaSyCyrU7Z1OXQxOpvVMsQVk1FZvWWb3R3ssA");
+    Geocode.fromLatLng(location.lat(), location.lng()).then(
+      response => {
+        address = response.results[0].formatted_address;
+        this.props.onStartChange(coordinate, address);
+      },
+      error => {
+        console.error(error);
+      }
+    );
     //callback function to Display
-    this.props.onStartChange(location);
-    //console.log(location);
+    
     map.panTo(location);
+
     //this is how we turn a google maps api latLng object to a readable JSON object
     //var object = JSON.stringify(ev.latLng.toJSON(), null, 2);
   };
 
   handleMapRightClick = (ref, map, ev) => {
     const location = ev.latLng;
-    this.setState({
-      isEndMarkerShown: true,
-      endMarkerPosition: location
-    });
+    var coordinate = {lat: location.lat(), lng: location.lng()};  //creating latlng object in {lat, lng} format    
+    let address = "";
+    Geocode.setApiKey("AIzaSyCyrU7Z1OXQxOpvVMsQVk1FZvWWb3R3ssA");
+    Geocode.fromLatLng(location.lat(), location.lng()).then(
+      response => {
+        address = response.results[0].formatted_address;
+        this.props.onEndChange(coordinate, address);
+      },
+      error => {
+        console.error(error);
+      }
+    );
     //callback function to Display
-    this.props.onEndChange(location);
+    
     //console.log(location);
     map.panTo(location);
   };
 
   onStartingMarkerDragEnd = (coord) => {
     const { latLng } = coord;
-
-    this.setState({
-      isStartingMarkerShown: true,
-      startingMarkerPosition: latLng
-    });
-    this.props.onStartChange(latLng);
-    console.log(latLng);
+    var coordinate = {lat: latLng.lat(), lng: latLng.lng()};  //creating latlng object in {lat, lng} format    
+    let address = "";
+    Geocode.setApiKey("AIzaSyCyrU7Z1OXQxOpvVMsQVk1FZvWWb3R3ssA");
+    Geocode.fromLatLng(latLng.lat(), latLng.lng()).then(
+      response => {
+        address = response.results[0].formatted_address;
+        this.props.onStartChange(coordinate, address);
+      },
+      error => {
+        console.error(error);
+      }
+    );
+    // console.log(latLng);
   };
 
   onEndMarkerDragEnd = (coord) => {
     const { latLng } = coord;
+    var coordinate = {lat: latLng.lat(), lng: latLng.lng()};  //creating latlng object in {lat, lng} format
+    let address = "";
+    Geocode.setApiKey("AIzaSyCyrU7Z1OXQxOpvVMsQVk1FZvWWb3R3ssA");
+    Geocode.fromLatLng(latLng.lat(), latLng.lng()).then(
+      response => {
+        address = response.results[0].formatted_address;
+        this.props.onEndChange(coordinate, address);
+      },
+      error => {
+        console.error(error);
+      }
+    );
     
-    this.setState({
-      isEndMarkerShown: true,
-      endMarkerPosition: latLng
-    });
-    this.props.onEndChange(latLng);
-    console.log(latLng);
+    // console.log(latLng);
   };
 
   receiveStartPoint(props) {
@@ -78,44 +103,61 @@ export class MapComponent extends Component {
 
 
   render() {
-    // const pathCoordinates = [
-    //   { lat: 42.37380692489817, lng: -72.53280681833881 },
-    //   { lat: 42.37314905741523, lng: -72.51986784205097 }
-    // ];
+    var pathCoordinates = this.props.route;
+    // if(pathCoordinates != null) {
+    //   this.centerAfterRoute();
+    // }
+
+    // const coordinates = [];
+    // var latlng;
+    // if(pathCoordinates != null) {
+    //   for (latlng of pathCoordinates) {
+    //     coordinates.push(<Polyline
+    //       path={latlng}
+    //       geodesic={true}
+    //       options={{
+    //           strokeColor: "#FF2527",
+    //           strokeOpacity: 0.75,
+    //           strokeWeight: 2
+    //       }}/>)
+    //   }
+    //   console.log(coordinates);
+    // }
+    
     return (
       <div style = {{float: 'right', width: '75%', height: '100%'}}>
         <Map
           google={this.props.google}
           zoom={14}
           style={mapStyles}
-          initialCenter={
-            {
-              lat: 42.3732,
-              lng: -72.5199
-            }
-          }
+          initialCenter= {{lat: 42.3732, lng: -72.5199}}
+          center= {this.props.mapCenter}
           onClick={this.handleMapClick}
           onRightclick={this.handleMapRightClick}
         >
-          {/* <Polyline
-            path={pathCoordinates}
-            geodesic={true}
-            options={{
-                strokeColor: "#ff2527",
-                strokeOpacity: 0.75,
-                strokeWeight: 2,
-            }}
-            /> */}
-          {this.state.isStartingMarkerShown && 
+          {this.props.renderRoute &&
+          // <div>
+          //   {coordinates}
+          //   </div>
+          <Polyline
+          path={pathCoordinates}
+          geodesic={true}
+          options={{
+              strokeColor: "#FF2527",
+              strokeOpacity: 0.75,
+              strokeWeight: 2
+          }}/>
+          }
+          {this.props.isStartingMarkerShown && 
           <Marker 
-          position={this.state.startingMarkerPosition}
+          position={this.props.startPoint}
           draggable={true}
           label="A"
           onDragend={(t, map, coord) => this.onStartingMarkerDragEnd(coord)}
           />}
-          {this.state.isEndMarkerShown && 
+          {this.props.isEndMarkerShown && 
           <Marker 
-          position={this.state.endMarkerPosition}
+          position={this.props.endPoint}
           draggable={true}
           label="B"
           onDragend={(t, map, coord) => this.onEndMarkerDragEnd(coord)}

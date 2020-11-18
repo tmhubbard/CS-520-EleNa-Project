@@ -9,6 +9,7 @@ from logging import (
 
 log_basicConfig(format='%(levelname)s:%(message)s', level=DEBUG)
 
+
 def make_graph(nodes: list):
     """Use the list of nodes to create a NetworkX Directed Graph.
     """
@@ -38,5 +39,5 @@ def make_graph(nodes: list):
     except Exception as e:
         log_error(e)
         raise
-    
+        
     return G

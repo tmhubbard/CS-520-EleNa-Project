@@ -7,17 +7,6 @@ import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-au
 class InputForm extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            startPoint: null,
-            endPoint: null,
-            elevationType: "min",
-            percentRoute: 10,
-            startLatLng: null,
-            endLatLng: null,
-            startAddress: '',
-            endAddress: ''
-        };
-
         this.handleStartAutocompleteChange = this.handleStartAutocompleteChange.bind(this);
         this.handleStartSelect = this.handleStartSelect.bind(this);
         this.handleEndAutocompleteChange = this.handleEndAutocompleteChange.bind(this);
@@ -28,7 +17,7 @@ class InputForm extends React.Component {
     }
 
     handleStartAutocompleteChange = startAddress => {
-        this.setState({ startAddress });
+        this.props.onStartChange(null, startAddress);
     };
 
     handleStartSelect = async value => {
@@ -36,13 +25,14 @@ class InputForm extends React.Component {
         const latLng = await getLatLng(results[0]);
         this.setState({
             startAddress: value,
-            startLatLng: latLng
+            startPoint: latLng
         });
-        // console.log(this.state.startLatLng);
+        this.props.onStartChange(latLng, value);
+        // console.log(this.state.startPoint);
     };
 
     handleEndAutocompleteChange = endAddress => {
-        this.setState({ endAddress });
+        this.props.onStartChange(null, endAddress);
     };
 
     handleEndSelect = async value => {
@@ -50,9 +40,10 @@ class InputForm extends React.Component {
         const latLng = await getLatLng(results[0]);
         this.setState({
             endAddress: value,
-            endLatLng: latLng
+            endPoint: latLng
         });
-        // console.log(this.state.endLatLng);
+        this.props.onEndChange(latLng, value);
+        // console.log(this.state.endPoint);
     };
     
       
@@ -66,20 +57,14 @@ class InputForm extends React.Component {
             [name]: value
         });
 
-        if(name === "startPoint"){
-            this.props.onStartChange(value);
-        }
-        else if(name === "endPoint"){
-            this.props.onEndChange(value);
-        }
-        else if(name === "elevationType"){
-            this.props.onPercentChange(value);
+        if(name === "elevationType"){
+            this.props.onTypeChange(value);
         }
     }
 
     handleSubmit(event) {
-        //console.log("form submitted");
         event.preventDefault(); //prevents form from actually being submitted
+        this.props.submit();
     }
     
     handleSliderChange(percent) {
@@ -88,23 +73,15 @@ class InputForm extends React.Component {
         //console.log(this.state.percentRoute);
     }
 
-    receiveStartPoint(props) {
-        this.setState({startingMarkerPosition: props.startLatLng});
-      }
-    
-    receiveEndPoint(props) {
-        this.setState({endMarkerPosition: props.endLatLng});
-    }
-
     render() {
         return (
             <div style={{float: 'left', width: '25%', height: '100%'}}>
-            <form>
+            <form onSubmit = {this.handleSubmit}>
                 <label>
                     Start Point
                     <br />
                     <PlacesAutocomplete
-                        value={this.state.startAddress}
+                        value={this.props.startAddress}
                         onChange={this.handleStartAutocompleteChange}
                         onSelect={this.handleStartSelect}
                     >
@@ -148,7 +125,7 @@ class InputForm extends React.Component {
                     End Point
                     <br />
                     <PlacesAutocomplete
-                        value={this.state.endAddress}
+                        value={this.props.endAddress}
                         onChange={this.handleEndAutocompleteChange}
                         onSelect={this.handleEndSelect}
                     >
@@ -203,7 +180,7 @@ class InputForm extends React.Component {
                 <div className="slidecontainer">
                     <Slider onSliderChange = {this.handleSliderChange}/>
                 </div>
-                <input type="submit" value="Find Route" />
+                <input type="submit" value="Find Route"/>
             </form>
             </div>
         );

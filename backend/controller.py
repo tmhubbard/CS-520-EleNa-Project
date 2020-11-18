@@ -8,15 +8,16 @@ import requests
 import osmnx as ox
 from model.graph.node import Node
 from model.graph.make_graph import make_graph
+from calcBoundary import boundaryBoxPoints
 import requests
 import os
 
 
 
 #generate osmnx graph for node validation with center as (cx, cy)
-def get_osmnx_graph(cx , cy):
+def get_osmnx_graph(cx , cy, radius):
     center = (cx, cy)
-    graph_orig = ox.graph_from_point(center, dist = 1000, network_type='drive')
+    graph_orig = ox.graph_from_point(center, dist = radius, network_type='walk')
     return graph_orig
 
 #returns the elevation of a lat,lng location
@@ -31,22 +32,33 @@ def get_elevation(location:(float, float))-> float:
 #from the list of sample_points validates and adds elevation for each location
 #return type is valid points list( (lat, lng , elevation) )
 
-def get_validNodes(sample_points ):
+def get_validNodes(sample_points , center, radius):
     # hard coding the cx , cy for osmnx graph
-    cx , cy =42.389555, -72.528127 # location of DU BOYS Library
-    osmnx_graph = get_osmnx_graph(cx,cy)
-    ox.plot.plot_graph(osmnx_graph)
+    cx , cy =center[0], center[1] # location of DU BOYS Library
+    osmnx_graph = get_osmnx_graph(cx,cy, radius)
+    #ox.plot.plot_graph(osmnx_graph)
     Nodes = []
+    nodes_ids = []
 
     for index, point in enumerate(sample_points):  #point is (lat, lng)
+        location = (point.latitude, point.longitude)
+        node_dst = ox.distance.get_nearest_node(osmnx_graph, location, method='haversine', return_dist= True)[1]
+        # nearest_point_ID = ox.distance.get_nearest_node(osmnx_graph, location, method='haversine', return_dist= True)[0]
 
-        node_dst = ox.distance.get_nearest_node(osmnx_graph, point, method='haversine', return_dist= True)[1]
         #check for valid range ( 10m>node_dst > 100m)
-        if node_dst<10 or node_dst>100 :#need to tune this
-
-            node = Node(id= index,latitude= point[0], longitude = point[1], elevation = get_elevation(point) , neighbors = None )
-            print(node.get_content())
-            Nodes.append(node)
+        if node_dst<5 or node_dst>50 :#need to tune this
+            point.elevation = get_elevation(location) #add elevation
+            Nodes.append(point)
+            nodes_ids.append(point.id)
+    
+    for node in Nodes:
+        valid_neighbors = []
+        for neighbor in node.neighbors:
+            neighbor_id = neighbor[0]
+            neighbor_dist = neighbor[1]
+            if neighbor_id in nodes_ids:
+                valid_neighbors.append((neighbor_id, neighbor_dist))      
+        node.neighbors = valid_neighbors          
 
     return Nodes
 
@@ -56,13 +68,29 @@ def get_validNodes(sample_points ):
 # graph = make_graph(valid_nodes)
 # print(type(graph))
 
+origin = (42.372391, -72.516950)
+destination = (42.372268, -72.511058)
+
+nodes, c = boundaryBoxPoints(origin, destination, 1.5, 30) # c =( (x,y) , radius )
+center = c[0]
+radius = c[1]
 
 
+valid_nodes = get_validNodes(nodes , center, radius)
+# breakpoint()
+G = make_graph(valid_nodes)
+# shortest_path = nx.astar_path(G, source=, target=4)
+# for point in valid_nodes:
+#     print(str(point.latitude) + "," +  str(point.longitude))
 
-def get_Graph(Nodes):
-    return make_graph(Nodes)
 
-
+# import networkx as nx
+# shortest_path = nx.astar_path(G, source=166, target=128)
+# shortest_path_length = nx.astar_path_length(G, source=166, target=128)
+# breakpoint()
+# import matplotlib.pyplot as plt
+# nx.draw(G, with_labels=True)
+# plt.show()
 
 
 

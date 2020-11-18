@@ -83,13 +83,14 @@ G = make_graph(valid_nodes)
 #     print(str(point.latitude) + "," +  str(point.longitude))
 
 
-import networkx as nx
-shortest_path = nx.astar_path(G, source=1, target=4)
-shortest_path_length = nx.astar_path_length(G, source=1, target=4)
+# import networkx as nx
+# shortest_path = nx.astar_path(G, source=166, target=128)
+# shortest_path_length = nx.astar_path_length(G, source=166, target=128)
+# breakpoint()
+# import matplotlib.pyplot as plt
+# nx.draw(G, with_labels=True)
+# plt.show()
 
-import matplotlib.pyplot as plt
-nx.draw(G, with_labels=True)
-plt.show()
 
 
 

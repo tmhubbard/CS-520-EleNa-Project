@@ -127,7 +127,7 @@ class Display extends React.Component {
                     renderRoute = {this.state.renderRoute}
                     route = {this.state.route}
                     />
-                {/* <div> */}
+                <div style = {{marginLeft: "20px"}}>
                 <InputForm onStartChange = {this.handleInputStartChange}
                     onEndChange = {this.handleInputEndChange}
                     onTypeChange = {this.handleInputTypeChange}
@@ -138,9 +138,9 @@ class Display extends React.Component {
                     endAddress = {this.state.endAddress}
                     submit = {this.handleSubmit}
                 />
-                {/* <RouteStats elevation = {this.state.totalElevation}
-                    distance = {this.state.totalDistance}/> */}
-                {/* </div> */}
+                <RouteStats elevation = {this.state.totalElevation}
+                    distance = {this.state.totalDistance}/>
+                </div>
             </div>
         );
     }

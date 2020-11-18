@@ -19,7 +19,7 @@ class Slider extends React.Component {
         return (
             <div>
             <input type="range" min="0" max="100" value={this.state.value} className="slider" onChange={this.handleOnChange} />
-            <div>{this.state.value}</div>
+            <p style={{marginLeft: "50px", marginTop: "0px"}}>{this.state.value}</p>
             </div>
         );
     }

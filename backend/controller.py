@@ -86,14 +86,22 @@ import networkx as nx
 
 def test(origin, destination, overhead):
     nodes, c = boundaryBoxPoints(origin, destination, overhead, 30) # c =( (x,y) , radius ) #1.5
+    center = c[0]
+    radius = c[1]
     valid_nodes = get_validNodes(nodes , center, radius)
     valid_nodes = get_validNodes(nodes , center, radius)
     G = make_graph(valid_nodes)
-    shortest_path = nx.astar_path(G, source=166, target=128)
-    # G.nodes.get(166)['lati']
+    # breakpoint()
+    shortest_path = nx.astar_path(G, source=10, target=12)
+
     route = []
     for node in shortest_path:
-        route.append({"lat":G.nodes.get(node.get_content["id"])['latitude'] , "lng": G.nodes.get(node.get_content["id"])['longitude']})
+        route.append(
+            {
+                "lat": G.nodes.get(node)['latitude'], 
+                "lng": G.nodes.get(node)['longitude']
+            }
+        )
     return route
     # shortest_path_length = nx.astar_path_length(G, source=166, target=128)
 

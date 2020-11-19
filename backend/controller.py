@@ -62,23 +62,49 @@ def get_validNodes(sample_points , center, radius):
 
     return Nodes
 
+
+
 #testing
 # sp =  [[42.386690, -72.525936] ,  [42.385544, -72.525861]]
 # valid_nodes = get_validNodes(sp)
 # graph = make_graph(valid_nodes)
 # print(type(graph))
 
-origin = (42.372391, -72.516950)
-destination = (42.372268, -72.511058)
+# origin = (42.372391, -72.516950)
+# destination = (42.372268, -72.511058)
 
-nodes, c = boundaryBoxPoints(origin, destination, 1.5, 30) # c =( (x,y) , radius )
-center = c[0]
-radius = c[1]
+# nodes, c = boundaryBoxPoints(origin, destination, 1.5, 30) # c =( (x,y) , radius )
+# center = c[0]
+# radius = c[1]
 
 
-valid_nodes = get_validNodes(nodes , center, radius)
+# valid_nodes = get_validNodes(nodes , center, radius)
 # breakpoint()
-G = make_graph(valid_nodes)
+# G = make_graph(valid_nodes)
+
+import networkx as nx
+
+def test(origin, destination, overhead):
+    nodes, c = boundaryBoxPoints(origin, destination, overhead, 30) # c =( (x,y) , radius ) #1.5
+    center = c[0]
+    radius = c[1]
+    valid_nodes = get_validNodes(nodes , center, radius)
+    valid_nodes = get_validNodes(nodes , center, radius)
+    G = make_graph(valid_nodes)
+    # breakpoint()
+    shortest_path = nx.astar_path(G, source=10, target=12)
+
+    route = []
+    for node in shortest_path:
+        route.append(
+            {
+                "lat": G.nodes.get(node)['latitude'], 
+                "lng": G.nodes.get(node)['longitude']
+            }
+        )
+    return route
+    # shortest_path_length = nx.astar_path_length(G, source=166, target=128)
+
 # shortest_path = nx.astar_path(G, source=, target=4)
 # for point in valid_nodes:
 #     print(str(point.latitude) + "," +  str(point.longitude))

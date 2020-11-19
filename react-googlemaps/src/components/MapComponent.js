@@ -4,7 +4,7 @@ import Geocode from 'react-geocode';
 
 
 const mapStyles = {
-  width: '87%',
+  width: '82%',
   height: '100%'
 };
 
@@ -104,7 +104,7 @@ export class MapComponent extends Component {
     var pathCoordinates = this.props.route;
     
     return (
-      <div style = {{float: 'right', width: '87%', height: '100%'}}>
+      
         <Map
           google={this.props.google}
           zoom={14}
@@ -115,9 +115,6 @@ export class MapComponent extends Component {
           onRightclick={this.handleMapRightClick}
         >
           {this.props.renderRoute &&
-          // <div>
-          //   {coordinates}
-          //   </div>
           <Polyline
           path={pathCoordinates}
           geodesic={true}
@@ -143,7 +140,7 @@ export class MapComponent extends Component {
           />}
 
         </Map>
-      </div>
+
     );
   }
 }

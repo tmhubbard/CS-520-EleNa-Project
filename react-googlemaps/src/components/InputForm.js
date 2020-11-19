@@ -7,15 +7,6 @@ import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-au
 class InputForm extends React.Component {
     constructor(props) {
         super(props);
-
-        // this.state = {
-        //     startPoint: null,
-        //     endPoint: null,
-        //     elevationType: "min",
-        //     percentRoute: 10,
-        //     startAddress: '',
-        //     endAddress: ''
-        // };
         this.handleStartAutocompleteChange = this.handleStartAutocompleteChange.bind(this);
         this.handleStartSelect = this.handleStartSelect.bind(this);
         this.handleEndAutocompleteChange = this.handleEndAutocompleteChange.bind(this);
@@ -78,7 +69,7 @@ class InputForm extends React.Component {
 
     render() {
         // console.log(this.state.startAddress);
-        console.log(this.props.startAddress);
+        
         return (
             <div //style={{float: 'left', width: '25%', height: '100%'}}
             >

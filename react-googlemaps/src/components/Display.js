@@ -33,37 +33,46 @@ class Display extends React.Component {
     //callback functions
     handleMapStartChange(location, address) {
         this.setState({isStartingMarkerShown: true, startPoint : location, startAddress: address, mapCenter: location});
-        console.log(location);
-        console.log(address);
+        // console.log(location);
+        // console.log(address);
     }
 
     handleMapEndChange(location, address) {
         this.setState({isEndMarkerShown: true, endPoint: location, endAddress: address, mapcenter: location});
-        console.log(location);
-        console.log(address);
+        // console.log(location);
+        // console.log(address);
     }
 
     handleInputStartChange(location, address) {
-        this.setState({isStartingMarkerShown: true, startPoint: location,
-        startAddress: address});
-        console.log(location);
-        console.log(address);
+        if(location != null) {
+            this.setState({isStartingMarkerShown: true, startPoint: location, startAddress: address});
+        }
+        else {
+            this.setState({startPoint: location, startAddress: address});
+        }
+        // console.log(location);
+        // console.log(address);
     }
 
     handleInputEndChange(location, address) {
-        this.setState({isEndMarkerShown: true, endPoint : location, endAddress: address});
-        console.log(location);
-        console.log(address);
+        if(location != null) {
+            this.setState({isEndMarkerShown: true, endPoint : location, endAddress: address});
+        }
+        else {
+            this.setState({endPoint : location, endAddress: address});
+        }
+        // console.log(location);
+        // console.log(address);
     }
 
     handleInputTypeChange(type) {
         this.setState({elevationType: type});
-        console.log(type);
+        // console.log(type);
     }
 
     handleInputPercentChange(percent) {
         this.setState({percentRoute: percent});
-        console.log(percent);
+        // console.log(percent);
     }
 
     // handleRecenter(location) {
@@ -79,7 +88,7 @@ class Display extends React.Component {
             percent_of_distance: this.state.percentRoute,
         }
         var JSONsubmission = JSON.stringify(submission);
-        // console.log(JSONsubmission);
+        console.log(JSONsubmission);
         //send data to backend
         //then request data back?
 
@@ -116,6 +125,7 @@ class Display extends React.Component {
     render() {
         return (
             <div>
+                <div style = {{float: 'right', width: '82%', height: '100%'}}>
                 <MapComponent onStartChange = {this.handleMapStartChange} 
                     onEndChange = {this.handleMapEndChange}
                     startPoint = {this.state.startPoint}
@@ -127,7 +137,8 @@ class Display extends React.Component {
                     renderRoute = {this.state.renderRoute}
                     route = {this.state.route}
                     />
-                <div style = {{marginLeft: "20px"}}>
+                </div>
+                <div style = {{marginLeft: "20px", width: '17%', height: '100%'}}>
                 <InputForm onStartChange = {this.handleInputStartChange}
                     onEndChange = {this.handleInputEndChange}
                     onTypeChange = {this.handleInputTypeChange}

@@ -4,7 +4,7 @@ import Geocode from 'react-geocode';
 
 
 const mapStyles = {
-  width: '75%',
+  width: '87%',
   height: '100%'
 };
 
@@ -100,13 +100,11 @@ export class MapComponent extends Component {
     this.setState({endMarkerPosition: props.endLocation});
   }
 
-
-
   render() {
     var pathCoordinates = this.props.route;
     
     return (
-      <div style = {{float: 'right', width: '75%', height: '100%'}}>
+      <div style = {{float: 'right', width: '87%', height: '100%'}}>
         <Map
           google={this.props.google}
           zoom={14}

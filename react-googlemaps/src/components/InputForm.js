@@ -80,9 +80,10 @@ class InputForm extends React.Component {
         // console.log(this.state.startAddress);
         console.log(this.props.startAddress);
         return (
-            <div style={{float: 'left', width: '25%', height: '100%'}}>
+            <div //style={{float: 'left', width: '25%', height: '100%'}}
+            >
             <form onSubmit = {this.handleSubmit}>
-                <label>
+                <label style={{fontWeight: "bold"}}>
                     Start Point
                     <br />
                     <PlacesAutocomplete
@@ -126,7 +127,7 @@ class InputForm extends React.Component {
                     </PlacesAutocomplete>
                 </label>
                 <br />
-                <label>
+                <label style={{fontWeight: "bold"}}>
                     End Point
                     <br />
                     <PlacesAutocomplete
@@ -170,22 +171,24 @@ class InputForm extends React.Component {
                     </PlacesAutocomplete>
                 </label>
                 <br />
-                <label>
+                <label style={{fontWeight: "bold"}}>
                     Type of Route:
-                    <br />
+                </label>
+                <div style={{display: "block"}}>
                     <input type="radio" id="min" name="elevationType" value="min" onChange={this.handleChange}/>
                     <label htmlFor="min">Minimum Elevation</label>
+                    <br />
                     <input type="radio" id="max" name="elevationType" value="max" onChange={this.handleChange}/>
                     <label htmlFor="max">Maximum Elevation</label>
-                </label>
+                </div>
                 <br />
-                <label>
-                    Distance (Percent of Route):
+                <label style={{fontWeight: "bold"}}>
+                    Maximum % Distance:
                 </label>
                 <div className="slidecontainer">
                     <Slider onSliderChange = {this.handleSliderChange}/>
                 </div>
-                <input type="submit" value="Find Route"/>
+                <input type="submit" value="Find Route" style={{marginLeft: "20px"}}/>
             </form>
             </div>
         );

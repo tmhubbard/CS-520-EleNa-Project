@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+import json
 
 # import controller
 # import model
@@ -35,9 +36,9 @@ def get_route():
     # FAKE DATA
     response = {
         "route": [
-            (42.389995, -72.528271), 
-            (42.389504, -72.528455), 
-            (42.390011, -72.528659)
+            {"lat": 42.389995, "lng": -72.528271}, 
+            {"lat": 42.389504, "lng": -72.528455}, 
+            {"lat": 42.390011, "lng": -72.528659}
         ],
         "total_elevation_gain": 24.5,
         "total_distance_travelled": 40

@@ -91,7 +91,10 @@ def test(origin, destination, overhead):
     G = make_graph(valid_nodes)
     shortest_path = nx.astar_path(G, source=166, target=128)
     # G.nodes.get(166)['lati']
-    return shortest_path
+    route = []
+    for node in shortest_path:
+        route.append({"lat":G.nodes.get(node.get_content["id"])['latitude'] , "lng": G.nodes.get(node.get_content["id"])['longitude']})
+    return route
     # shortest_path_length = nx.astar_path_length(G, source=166, target=128)
 
 # shortest_path = nx.astar_path(G, source=, target=4)

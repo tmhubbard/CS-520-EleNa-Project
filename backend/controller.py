@@ -42,14 +42,14 @@ def get_validNodes(sample_points , center, radius):
 
     for index, point in enumerate(sample_points):  #point is (lat, lng)
         location = (point.latitude, point.longitude)
-        node_dst = ox.distance.get_nearest_node(osmnx_graph, location, method='haversine', return_dist= True)[1]
+        # node_dst = ox.distance.get_nearest_node(osmnx_graph, location, method='haversine', return_dist= True)[1]
         # nearest_point_ID = ox.distance.get_nearest_node(osmnx_graph, location, method='haversine', return_dist= True)[0]
 
         #check for valid range ( 10m>node_dst > 100m)
-        if node_dst<5 or node_dst>50 :#need to tune this
-            point.elevation = get_elevation(location) #add elevation
-            Nodes.append(point)
-            nodes_ids.append(point.id)
+        # if node_dst<5 or node_dst>50 :#need to tune this
+        point.elevation = get_elevation(location) #add elevation
+        Nodes.append(point)
+        nodes_ids.append(point.id)
     
     for node in Nodes:
         valid_neighbors = []
@@ -89,10 +89,9 @@ def test(origin, destination, overhead):
     center = c[0]
     radius = c[1]
     valid_nodes = get_validNodes(nodes , center, radius)
-    valid_nodes = get_validNodes(nodes , center, radius)
     G = make_graph(valid_nodes)
     # breakpoint()
-    shortest_path = nx.astar_path(G, source=10, target=12)
+    shortest_path = nx.astar_path(G, source=0, target=392)
 
     route = []
     for node in shortest_path:

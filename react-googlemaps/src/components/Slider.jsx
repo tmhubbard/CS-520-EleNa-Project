@@ -4,7 +4,7 @@ class Slider extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            value: 10
+            value: 120
         }
 
         this.handleOnChange = this.handleOnChange.bind(this);
@@ -18,8 +18,8 @@ class Slider extends React.Component {
     render() {
         return (
             <div>
-            <input type="range" min="0" max="100" value={this.state.value} className="slider" onChange={this.handleOnChange} />
-            <p style={{marginLeft: "50px", marginTop: "0px"}}>{this.state.value}</p>
+            <input type="range" min="100" max="200" step="1" value={this.state.value} className="slider" onChange={this.handleOnChange} />
+            <p style={{marginLeft: "50px", marginTop: "0px"}}>{this.state.value}%</p>
             </div>
         );
     }

@@ -174,7 +174,7 @@ class InputForm extends React.Component {
                 </div>
                 <br />
                 <label style={{fontWeight: "bold"}}>
-                    Maximum % Distance:
+                    Maximum Distance:
                 </label>
                 <div className="slidecontainer">
                     <Slider onSliderChange = {this.handleSliderChange}/>

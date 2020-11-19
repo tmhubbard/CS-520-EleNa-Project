@@ -39,15 +39,10 @@ def get_route():
 
     route = test(origin, destination, overhead)
 
-    breakpoint()
-    # FAKE DATA
+    # breakpoint()
+    
     response = {
         "route": route,
-        # [
-            # {"lat": 42.389995, "lng": -72.528271}, 
-            # {"lat": 42.389504, "lng": -72.528455}, 
-            # {"lat": 42.390011, "lng": -72.528659}
-        # ],
         "total_elevation_gain": 24.5,
         "total_distance_travelled": 40
     }

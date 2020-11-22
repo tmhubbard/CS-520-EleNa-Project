@@ -125,7 +125,7 @@ class Display extends React.Component {
     render() {
         return (
             <div>
-                <div style = {{float: 'right', width: '82%', height: '100%'}}>
+                <div style = {{float: 'right', width: '82%', height: '100%', overflowX: 'hidden'}}>
                 <MapComponent onStartChange = {this.handleMapStartChange} 
                     onEndChange = {this.handleMapEndChange}
                     startPoint = {this.state.startPoint}

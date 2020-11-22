@@ -5,7 +5,8 @@ import Geocode from 'react-geocode';
 
 const mapStyles = {
   width: '82%',
-  height: '100%'
+  height: '100%',
+  overflowX: 'hidden'
 };
 
 export class MapComponent extends Component {
@@ -104,7 +105,6 @@ export class MapComponent extends Component {
     var pathCoordinates = this.props.route;
     
     return (
-      
         <Map
           google={this.props.google}
           zoom={14}
@@ -138,9 +138,7 @@ export class MapComponent extends Component {
           label="B"
           onDragend={(t, map, coord) => this.onEndMarkerDragEnd(coord)}
           />}
-
         </Map>
-
     );
   }
 }

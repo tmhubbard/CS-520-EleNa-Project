@@ -120,8 +120,8 @@ export class MapComponent extends Component {
           geodesic={true}
           options={{
               strokeColor: "#FF2527",
-              strokeOpacity: 0.75,
-              strokeWeight: 2
+              strokeOpacity: 1.0,
+              strokeWeight: 3
           }}/>
           }
           {this.props.isStartingMarkerShown && 

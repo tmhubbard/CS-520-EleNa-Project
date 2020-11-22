@@ -102,6 +102,13 @@ def distanceBetween(origin, destination):
 	distanceMatrix = gmaps.distance_matrix(origin, destination)
 	return distanceMatrix["rows"][0]["elements"][0]["distance"]["value"]
 
+def distanceBetweenDict(origin, destinationList):
+	distDict = {}
+	for destNum, dest in enumerate((gmaps.distance_matrix(origin, destinationList))["rows"][0]["elements"]):
+		distDict[destNum] = dest["distance"]["value"]
+	distDict = {k: v for k, v in sorted(distDict.items(), key=lambda item: item[1])}
+	return distDict
+
 # This will calculate the midpoint between point A and point B
 def midpoint(pointA, pointB):
 	midpointX = (pointA[0] + pointB[0])/2
@@ -135,10 +142,10 @@ def offsetCoordinates(origin, offset):
 	# print("The rotated point has coords %s" % offset)
 
 	magic = 111111
-	latChagne = yOffset/magic
-	midLat = originLat
+	latChange = yOffset/magic
+	midLat = originLat + latChange/2
 	longChange = xOffset/(magic*cos((pi * midLat)/180))
-	newLat = originLat + latChagne
+	newLat = originLat + latChange
 	newLong = originLong + longChange
 	return (newLat, newLong)
 
@@ -167,14 +174,16 @@ def boundaryBoxPoints(origin, destination, c, spacing):
 	longDiff = distanceBetween(origin, (origin[0], destination[1]))
 	latDiff = distanceBetween(origin, (destination[0], origin[1]))
 	angleRad = (atan(latDiff/longDiff))
+	if (destination[0] < origin[0]):
+		angleRad *= -1
+		latDiff *= -1
 
 	# Setting up some of the important calculations for the boundary box
 	pointA = [0, 0]
 	pointB = [pointDistance, 0]
-	rotatedDestination = np.array(rotatePoint(pointB, angleRad))
+	rotatedDestination = np.array((longDiff, latDiff))
 	rotatedMidpoint = rotatePoint([pointDistance/2, 0], angleRad)
 	midpointLatLong = offsetCoordinates(origin, rotatedMidpoint)
-	c = 1.5
 	x = np.linalg.norm(np.array(pointA)-np.array(pointB))
 	z = (x/2) * np.sqrt((c**2 - 1))
 
@@ -292,6 +301,9 @@ def boundaryBoxPoints(origin, destination, c, spacing):
 	# Make the nodes
 	startNeighbors = {}
 	endNeighbors = {}
+	nodeIDToNodeListIdx = {}
+	nodeListIdxToID = {}
+	nodeOffsetDict = {} # pointID to node offset in "distance from start" space
 	for pointNum, newPoint in enumerate(newPoints):
 
 		# Skip this node if it's a badNode
@@ -315,12 +327,58 @@ def boundaryBoxPoints(origin, destination, c, spacing):
 			neighborList.append((neighborID, pointDist))
 
 		nodeList.append(Node(curNodeID, latitude=newPoints[pointNum][0], longitude=newPoints[pointNum][1], neighbors = neighborList))
+		nodeListIdxToID[len(nodeList)-1] = curNodeID
+		nodeOffsetDict[curNodeID] = curPointOffset
+		nodeIDToNodeListIdx[curNodeID] = len(nodeList)-1
 
-	sortedStart = {k: v for k, v in sorted(startNeighbors.items(), key=lambda item: item[1])}
-	sortedEnd = {k: v for k, v in sorted(endNeighbors.items(), key=lambda item: item[1])}
+	latLongNodeList = [(x.latitude, x.longitude) for x in nodeList[2:]]
+	distBetweenStartDict = distanceBetweenDict(origin, latLongNodeList)
+	sortedLatLongIdxList_start = [(y+2) for y in distBetweenStartDict]
+	distBetweenStart = [int(nodeListIdxToID[x]) for x in sortedLatLongIdxList_start]
+	startNeighborList = [(x, distBetweenStartDict[nodeIDToNodeListIdx[x]-2]) for x in distBetweenStart][:8]
 
-	startNeighborList = ([(nodeID, distance) for nodeID, distance in sortedStart.items()][:8])
-	endNeighborList = ([(nodeID, distance) for nodeID, distance in sortedEnd.items()][:8])
+	distBetweenEndDict = distanceBetweenDict(destination, latLongNodeList)
+	sortedLatLongIdxList_end = [(y+2) for y in distBetweenEndDict]
+	distBetweenEnd = [nodeListIdxToID[x] for x in sortedLatLongIdxList_end]
+	endNeighborList = [(x, distBetweenEndDict[int(nodeIDToNodeListIdx[x]-2)]) for x in distBetweenEnd][:8]
+
+
+
+	# sortedStart = {k: v for k, v in sorted(startNeighbors.items(), key=lambda item: item[1])}
+	# sortedEnd = {k: v for k, v in sorted(endNeighbors.items(), key=lambda item: item[1])}
+
+	# startNeighborList = ([(nodeID, distance) for nodeID, distance in sortedStart.items()][:8])
+	# print("\nThe sorted start neighbor list is: \n")
+	# for neighborID, distance in sortedStart.items():
+	# 	print("%s (%s meters away from start)\n" % (neighborID, distance))
+	# print("\nThe sorted end neighbor list is: \n")
+	# for neighborID, distance in sortedEnd.items():
+	# 	print("%s (%s meters away from start)\n" % (neighborID, distance))
+	# endNeighborList = ([(nodeID, distance) for nodeID, distance in sortedEnd.items()][:8])
+
+
+
+	# Add the start and end point offsets to the nodeOffsetDict
+	if (not switched):
+		nodeOffsetDict[0] = np.array((0, 0))
+		nodeOffsetDict[-1] = np.array(rotatePoint((pointDistance, 0), angleRad))
+	else:
+		nodeOffsetDict[-1] = np.array((0, 0))
+		nodeOffsetDict[0] = np.array(rotatePoint((pointDistance, 0), angleRad))
+
+	# Add the neighbors from startNeighborList and endNeighborList to the respective neighborLists
+	# of the neighbouring nodes
+	for startNeighborPair in startNeighborList:
+		idToAppend = 0
+		if (switched): idToAppend = -1
+		neighborID, dist = startNeighborPair
+		nodeList[nodeIDToNodeListIdx[neighborID]].neighbors.append((idToAppend, dist))
+
+	for endNeighborPair in endNeighborList:
+		idToAppend = -1
+		if (switched): idToAppend = 0
+		neighborID, dist = endNeighborPair
+		nodeList[nodeIDToNodeListIdx[neighborID]].neighbors.append((idToAppend, dist))
 
 	# Edit the start and end nodes of the nodelist 
 	if (not switched):
@@ -331,23 +389,11 @@ def boundaryBoxPoints(origin, destination, c, spacing):
 		nodeList[1].neighbors = startNeighborList
 
 	# Uncomment this for visual aids
-	# plt.plot(pointA[0], pointA[1], "go", markersize=15)
-	# plt.plot(pointB[0], pointB[1], "ro", markersize=15)
-	# plt.plot(longDiff, latDiff, "r+", markersize=20)
-	# for pointNum, point in enumerate(rotatedPoints):
-	# 	plt.plot(point[0], point[1], "go", markersize=2)
-	# 	plt.text(point[0], point[1], nodeIDToAllPoints[pointNum])
-	# plt.show()
+	plt.plot(pointA[0], pointA[1], "go", markersize=15)
+	plt.plot(longDiff, latDiff, "ro", markersize=15)
+	for pointNum, point in enumerate(rotatedPoints):
+		plt.plot(point[0], point[1], "go", markersize=2)
+		plt.text(point[0], point[1], nodeIDToAllPoints[pointNum])
+	plt.show()
 
-	return nodeList, (midpointLatLong, (pointDistance/2)+cOffset)
-
-# =========================
-#        * MAIN * 
-# =========================
-
-# Get the coordinates from the front-end
-origin = (42.372391, -72.516950)
-# destination = (42.372268, -72.511058)
-#
-# nodes, center = boundaryBoxPoints(origin, destination, 1.5, 30)
-# print(center)
+	return nodeList, (midpointLatLong, (pointDistance/2)+cOffset), nodeOffsetDict

@@ -37,14 +37,14 @@ def get_route():
     destination = (end_point['lat'], end_point['lng'])
     overhead = percent_of_distance/100
 
-    route = test(origin, destination, overhead)
+    route, eleGain, distTravel = test(origin, destination, overhead)
 
     # breakpoint()
     
     response = {
         "route": route,
-        "total_elevation_gain": 24.5,
-        "total_distance_travelled": 40
+        "total_elevation_gain": eleGain,
+        "total_distance_travelled": distTravel
     }
 
     return jsonify(**response)

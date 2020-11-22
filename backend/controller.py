@@ -6,9 +6,11 @@
 # =========================
 import requests
 import osmnx as ox
+import numpy as np
+import matplotlib.pyplot as plt
 from model.graph.node import Node
 from model.graph.make_graph import make_graph
-from calcBoundary import boundaryBoxPoints
+from calcBoundary import boundaryBoxPoints, midpoint
 import requests
 import os
 
@@ -25,6 +27,7 @@ def get_elevation(location:(float, float))-> float:
     lat = location[0]
     lng = location[1]
     apikey = "AIzaSyBmg_5waDYCtmUW3YCNJ75dUWc6_5_i8wE"
+    apikey = "AIzaSyC0_EhM25ltUK20oJPH4k4Ni6jqiU4bS2Q" # Trevor's API key
     url = "https://maps.googleapis.com/maps/api/elevation/json"
     request = requests.get(url + "?locations=" + str(lat) + "," + str(lng) + "&key=" + apikey).json()
     return request['results'][0]['elevation']
@@ -32,13 +35,15 @@ def get_elevation(location:(float, float))-> float:
 #from the list of sample_points validates and adds elevation for each location
 #return type is valid points list( (lat, lng , elevation) )
 
-def get_validNodes(sample_points , center, radius):
+def get_validNodes(sample_points , center, radius, nodeOffsets):
     # hard coding the cx , cy for osmnx graph
     cx , cy =center[0], center[1] # location of DU BOYS Library
     osmnx_graph = get_osmnx_graph(cx,cy, radius)
     #ox.plot.plot_graph(osmnx_graph)
     Nodes = []
+    NodeIDToNodesIdx = {}
     nodes_ids = []
+    reconnectThreshold = 3
 
     for index, point in enumerate(sample_points):  #point is (lat, lng)
         location = (point.latitude, point.longitude)
@@ -46,23 +51,53 @@ def get_validNodes(sample_points , center, radius):
         # nearest_point_ID = ox.distance.get_nearest_node(osmnx_graph, location, method='haversine', return_dist= True)[0]
 
         #check for valid range ( 10m>node_dst > 100m)
-        if node_dst<5 or node_dst>50 :#need to tune this
+        if (node_dst<3 or node_dst>10) or (index==0 or index == 1): #need to tune this
             point.elevation = get_elevation(location) #add elevation
             Nodes.append(point)
+            NodeIDToNodesIdx[point.id] = len(Nodes)-1
             nodes_ids.append(point.id)
     
+    newBackEdges = [] # This will be helpful for reconnecting "islanded" nodes 
+
     for node in Nodes:
         valid_neighbors = []
         for neighbor in node.neighbors:
             neighbor_id = neighbor[0]
             neighbor_dist = neighbor[1]
             if neighbor_id in nodes_ids:
-                valid_neighbors.append((neighbor_id, neighbor_dist))      
-        node.neighbors = valid_neighbors          
+                valid_neighbors.append((neighbor_id, neighbor_dist))
 
-    return Nodes
+        # Prevent this node from being "islanded" by reconnecting it w/ closer nodes
+        if (len(valid_neighbors) < reconnectThreshold):
+            
+            # Calculate the distance between this node and all other valid nodes
+            neighborDists = {}
+            for otherPointID in nodes_ids:
+                curNodeOffset = nodeOffsets[node.id]
+                neighborOffset = nodeOffsets[otherPointID]
+                dist = np.linalg.norm(curNodeOffset - neighborOffset)
+                neighborDists[otherPointID] = dist
 
+            # Sort the distances, and reconnect the closest couple
+            sortedNeighborDists = {k: v for k, v in sorted(neighborDists.items(), key=lambda item: item[1])}
+            toReconnect = [(nodeID, distance) for nodeID, distance in list(sortedNeighborDists.items())[:reconnectThreshold]]
+            currentConnected = [nodeID for nodeID, neighDist in valid_neighbors]
+            for neighborPair in toReconnect:
+                neighborID, neighborDist = neighborPair
+                if (neighborID not in currentConnected):
+                    valid_neighbors.append((neighborID, neighborDist))
+                    newBackEdges.append((neighborID, node.id, neighborDist))
 
+        node.neighbors = valid_neighbors      
+
+    # Make the new back edges for the nodes that you reconnected 
+    for backEdge in newBackEdges:
+        sourceNodeID = backEdge[0]
+        targetNodeID = backEdge[1]
+        backEdgeDist = backEdge[2]
+        Nodes[NodeIDToNodesIdx[sourceNodeID]].neighbors.append((targetNodeID, backEdgeDist))    
+
+    return Nodes, NodeIDToNodesIdx
 
 #testing
 # sp =  [[42.386690, -72.525936] ,  [42.385544, -72.525861]]
@@ -85,25 +120,71 @@ def get_validNodes(sample_points , center, radius):
 import networkx as nx
 
 def test(origin, destination, overhead):
-    nodes, c = boundaryBoxPoints(origin, destination, overhead, 30) # c =( (x,y) , radius ) #1.5
+    nodes, c, nodeOffsets = boundaryBoxPoints(origin, destination, overhead, 150) # c =( (x,y) , radius ) #1.5
     center = c[0]
     radius = c[1]
-    valid_nodes = get_validNodes(nodes , center, radius)
-    valid_nodes = get_validNodes(nodes , center, radius)
+    valid_nodes, nodeIDsToValidNodesIdx = get_validNodes(nodes, center, radius, nodeOffsets)
     G = make_graph(valid_nodes)
     # breakpoint()
-    shortest_path = nx.astar_path(G, source=10, target=12)
+    shortest_path = nx.astar_path(G, source=0, target=-1)
 
     route = []
-    for node in shortest_path:
+    for nodeNum, node in enumerate(shortest_path):
         route.append(
             {
                 "lat": G.nodes.get(node)['latitude'], 
                 "lng": G.nodes.get(node)['longitude']
             }
         )
-    return route
+    visualizePath(valid_nodes, nodeIDsToValidNodesIdx, shortest_path)
+
+    return route, calcElevationGain(G, shortest_path), calcRouteDistance(valid_nodes, nodeIDsToValidNodesIdx, shortest_path)
     # shortest_path_length = nx.astar_path_length(G, source=166, target=128)
+
+# This method will calculate the elevation gain for a given route
+def calcElevationGain(graph, path):
+    elevationGain = 0
+    for nodeNum, thisNode in enumerate(path):
+
+        # Skip the last node
+        if (nodeNum == len(path)-1): continue
+
+        # Get the next node 
+        nextNode = path[nodeNum+1]
+
+        # Fetch the elevation values for the given nodes
+        thisNodeElevation = graph.nodes.get(thisNode)["elevation"]
+        nextNodeElevation = graph.nodes.get(nextNode)["elevation"]
+
+        # Don't change the elevation gain if the next node is lower than this one
+        if (nextNodeElevation < thisNodeElevation): continue
+
+        # Calculate elevation gain
+        elevationGain += (nextNodeElevation - thisNodeElevation)
+
+    return elevationGain
+
+# This method will calculate the distance for a given route
+def calcRouteDistance(nodes, NodeIDToNodesIdx, path):
+
+    distance = 0
+    for nodeNum, thisNode in enumerate(path):
+
+        # Skip the last node 
+        if (nodeNum == len(path)-1): continue
+
+        # Get the nextNode
+        nextNode = path[nodeNum+1]
+
+        # Find the distance between these two nodes
+        nodeDist = 0
+        for neighborID, neighborDist in nodes[NodeIDToNodesIdx[thisNode]].neighbors:
+            if (neighborID == nextNode):
+                nodeDist = neighborDist
+                break
+        distance += nodeDist
+    return distance
+
 
 # shortest_path = nx.astar_path(G, source=, target=4)
 # for point in valid_nodes:
@@ -119,8 +200,47 @@ def test(origin, destination, overhead):
 # plt.show()
 
 
+# This method will help me visualize the path that the nodes give
+def visualizePath(nodes, NodeIDToNodesIdx, path):
+    for node in nodes:
+        plt.plot(node.longitude, node.latitude, "go", markersize=10)
+        plt.text(node.longitude, node.latitude, ("%s (%.2f)" % (str(node.id), node.elevation)))
 
+    # Plot the lines between neighbors
+    linesDrawn = {}
+    for node in nodes: 
+        # Step through each of the neighbors in node's neighborList
+        for neighborNode in node.neighbors:
 
+            neighborNodeID, neighborNodeDist = neighborNode
 
+            # Draw the line between this node and neighborNode if it hasn't already been drawn
+            if ((neighborNodeID, node.id) in linesDrawn): continue
+            longitudes = (node.longitude, nodes[NodeIDToNodesIdx[neighborNodeID]].longitude)
+            latitudes = (node.latitude, nodes[NodeIDToNodesIdx[neighborNodeID]].latitude)
+            plt.plot(longitudes, latitudes, "g-")
+            lineMidpoint = midpoint([node.longitude, node.latitude], [nodes[NodeIDToNodesIdx[neighborNodeID]].longitude, nodes[NodeIDToNodesIdx[neighborNodeID]].latitude])
+            plt.text(lineMidpoint[0], lineMidpoint[1], ("%.2f" % float(neighborNodeDist)))
+
+    # Draw a line for the path 
+    for pathNodeNum, pathNodeID in enumerate(path):
+
+        # Skip this node if it's the last one 
+        if (pathNodeNum == len(path)-1): continue
+
+        thisNode = nodes[NodeIDToNodesIdx[pathNodeID]]
+        nextNode = nodes[NodeIDToNodesIdx[path[pathNodeNum+1]]]
+        # nodeDistance = 0
+        # for neighborID, neighborDist in thisNode.neighbors:
+        #     if (neighborID == nextNode.id): 
+        #         nodeDistance = neighborDist
+        #         break
+        longitudes = (thisNode.longitude, nextNode.longitude)
+        latitudes = (thisNode.latitude, nextNode.latitude)
+        # lineMidpoint = midpoint([thisNode.longitude, thisNode.latitude], [nextNode.longitude, nextNode.latitude])
+        plt.plot(longitudes, latitudes, "r-", linewidth=5)
+        # plt.text(lineMidpoint[0], lineMidpoint[1], str(nodeDistance))
+
+    plt.show()
 
 

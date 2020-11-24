@@ -23,7 +23,6 @@ def make_graph(nodes: list):
         for node in nodes:
             if node.neighbors:
                 for neighbor_id, distance in node.neighbors:
-                    print("When looking at Node %d --> Node %d, we found a distance of %.3f" % (node.id, neighbor_id, distance))
                     current_node_elevation = node.elevation
                     neighbor_node_elevation = G.nodes.get(neighbor_id).get('elevation')
                     elevation_change = neighbor_node_elevation - current_node_elevation
@@ -32,7 +31,7 @@ def make_graph(nodes: list):
                     if (distance == 0): 
                         edge_weight = 0
                     else:
-                        edge_weight = elevation_change / distance
+                        edge_weight = elevation_change
                     G.add_edge(
                         node.id, 
                         neighbor_id, 

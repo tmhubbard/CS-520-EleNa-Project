@@ -1,6 +1,7 @@
 
-# This script was written by Trevor Hubbard; its purpose is to do some manipulation of
-# points within an ellipse to figure out math
+# This script was written by Trevor Hubbard; its purpose is to figure out an 
+# ellipse boundary around an origin and destination, and figure out (lat, long)
+# points within this ellipse to use as sample points for the EleNa graph 
 
 # =========================
 #        * SETUP *
@@ -10,114 +11,56 @@ from math import sin, cos, pi, atan
 import numpy as np
 import matplotlib.pyplot as plt
 import googlemaps
+from model.graph.node import Node
+from logging import (
+    error as log_error,
+    exception as log_exception,
+    info as log_info,
+    basicConfig as log_basicConfig,
+    DEBUG
+)
 
 # Setting up the Google Maps instance
 apiKey = "AIzaSyC0_EhM25ltUK20oJPH4k4Ni6jqiU4bS2Q"
 gmaps = googlemaps.Client(key=apiKey)
 
-# =========================
-#        * CLASSES *
-# =========================
-
-class Node:
-    """
-    Node class represets a node in a Graph
-    """
-    def __init__(
-            self, 
-            id: int, 
-            latitude: float = None, longitude: float = None, 
-            elevation: float = None,
-            neighbors: list = None):
-        self._id = id
-        self._latitude = latitude
-        self._longitude = longitude
-        self._elevation = elevation
-        self._neighbors = neighbors # [(neighborID, distance), (,), ...]
-    
-    @property
-    def id(self) -> int:
-        return self._id
-    
-    @id.setter
-    def id(self, id: int):
-        self._id = id
-    
-    @property
-    def latitude(self) -> float:
-        return self._latitude
-    
-    @latitude.setter 
-    def latitude(self, latitude: float):
-        self._latitude = latitude
-    
-    @property
-    def longitude(self) -> float:
-        return self._longitude
-    
-    @longitude.setter 
-    def longitude(self, longitude: float):
-        self._longitude = longitude
-
-    @property
-    def elevation(self) -> float:
-        return self._elevation
-    
-    @elevation.setter 
-    def elevation(self, elevation: float):
-        self._elevation = elevation
-
-    @property
-    def neighbors(self) -> list:
-        return self._neighbors
-    
-    @neighbors.setter 
-    def neighbors(self, neighbors: list):
-        self._neighbors = neighbors
-    
-    def as_json(self) -> dict:
-        return {
-            "id": self._id,
-            "latitude": self._latitude,
-            "longitude": self._longitude,
-            "elevation": self._elevation
-        }
-    
-    def get_content(self) -> dict:
-        return {
-            "id": self._id,
-            "latitude": self._latitude,
-            "longitude": self._longitude,
-            "elevation": self._elevation,
-            "neighbors": self._neighbors,
-        }
-
-# =========================
-#       * METHODS *
-# =========================
-
-# This method will return the distance between the origin and 
-# destination points (in meters). Pass the points as lat/long tuples
 def distanceBetween(origin, destination):
+	"""This method will return the distance between the origin and 
+	   destination points (in meters). Pass the points as lat/long tuples
+	"""
 	distanceMatrix = gmaps.distance_matrix(origin, destination)
 	return distanceMatrix["rows"][0]["elements"][0]["distance"]["value"]
 
 def distanceBetweenDict(origin, destinationList):
-	distDict = {}
-	for destNum, dest in enumerate((gmaps.distance_matrix(origin, destinationList))["rows"][0]["elements"]):
-		distDict[destNum] = dest["distance"]["value"]
+	"""This method will return the distance between the origin and the 
+	   list of destinations
+	"""
+	
+	# Generate distDict (which is a dict of destNum (idx of destinationList) --> distance from origin)
+	# This has some pagination so that we don't query more than Google Maps's max element amount 
+	distDict = {} 
+	maxElements = 100
+	destLists = [destinationList[i * maxElements:(i + 1) * maxElements] for i in range((len(destinationList) + maxElements - 1) // maxElements )]
+	for destListNum, destList in enumerate(destLists):
+		for destNum, dest in enumerate((gmaps.distance_matrix(origin, destList))["rows"][0]["elements"]):
+			destNum = destNum + (maxElements * destListNum)
+			distDict[destNum] = dest["distance"]["value"]
+
+	# Sort the destination dict by distance, and return it
 	distDict = {k: v for k, v in sorted(distDict.items(), key=lambda item: item[1])}
 	return distDict
 
-# This will calculate the midpoint between point A and point B
 def midpoint(pointA, pointB):
+	"""This will calculate the midpoint between point A and point B
+	"""
 	midpointX = (pointA[0] + pointB[0])/2
 	midpointY = (pointA[1] + pointB[1])/2
 	return [midpointX, midpointY]
 
-# This method will return True / False depending on whether 
-# the given point is in the ellipse defined by h, k, rx, and ry
 def inEllipse(point, h, k, rx, ry):
+	"""This method will return True / False depending on whether 
+       the given point is in the ellipse defined by h, k, rx, and ry
+	"""
 	curX, curY = point
 	firstFraction = ((curX-h)**2)/(rx**2)
 	secondFraction = ((curY-k)**2)/(ry**2)
@@ -125,22 +68,21 @@ def inEllipse(point, h, k, rx, ry):
 	if (result <= 1): return True
 	else: return False
 
-# This will give the coordinates for a given point when its coordinate system
-# is rotated counter-clockwise by the provided angle
 def rotatePoint(point, angle):
+	"""This will give the coordinates for a given point when its coordinate system
+   	   is rotated counter-clockwise by the provided angle
+	"""
 	x_old, y_old = point
 	x_new = x_old * cos(angle) - y_old * sin(angle)
 	y_new = x_old * sin(angle) + y_old * cos(angle)
 	return [x_new, y_new]
 
-# This will return a new (lat, long) coordinate pair representing
-# the (lat, long) at origin offset by offset[0] meters north and offset[1] meters west
 def offsetCoordinates(origin, offset):
+	"""This will return a new (lat, long) coordinate pair representing
+	   the (lat, long) at origin offset by offset[0] meters north and offset[1] meters west
+	"""
 	originLat, originLong = origin
 	xOffset, yOffset = offset
-
-	# print("The rotated point has coords %s" % offset)
-
 	magic = 111111
 	latChange = yOffset/magic
 	midLat = originLat + latChange/2
@@ -149,11 +91,14 @@ def offsetCoordinates(origin, offset):
 	newLong = originLong + longChange
 	return (newLat, newLong)
 
-# This method, when given (lat, long) pairs origin and destination, will
-# return a list of (lat, long) pairs corresponding to a boundary box around them.
 def boundaryBoxPoints(origin, destination, c, spacing):
 
-	# Figure out if the origin or the destination is on the left
+	"""This method, when given (lat, long) pairs origin and destination, will
+	   return a list of (lat, long) pairs corresponding to a boundary box around them.
+    """
+
+	# If the destination is immediately above the origin, nudge it *very slightly* 
+	# to the east (a bit hacky, but it works fine) 
 	if (origin[1] == destination[1]):
 		destination[1] += 0.000001
 
@@ -170,6 +115,7 @@ def boundaryBoxPoints(origin, destination, c, spacing):
 		destination = temp
 		switched = True
 
+	# Calculating the angle between the two points
 	pointDistance = distanceBetween(origin, destination)
 	longDiff = distanceBetween(origin, (origin[0], destination[1]))
 	latDiff = distanceBetween(origin, (destination[0], origin[1]))
@@ -206,7 +152,8 @@ def boundaryBoxPoints(origin, destination, c, spacing):
 	left_y = [bottomLeft[1], topLeft[1]]
 	right_y = left_y
 
-	# This is an important ratio
+	# This ratio defines how many more points the width will have than
+	# the height of the rectangle that's generated
 	widthHeightRatio = 1.15
 
 	# Set desired number of points
@@ -215,14 +162,16 @@ def boundaryBoxPoints(origin, destination, c, spacing):
 	vertPointAmt = (round(vertPointAmt))
 	horizPointAmt = (round(horizPointAmt))
 
+	# Create a horizontal and vertical point range w/ np.linspace
 	spaceX = x/(horizPointAmt+1)
 	spaceY = (2*z)/(vertPointAmt+1)
 	horizPoints = []
 	vertPoints = []
-
 	horizPoints = list(np.linspace(topLeft[0]+spaceX, topRight[0]-spaceX, horizPointAmt))
 	vertPoints = list(np.linspace(topLeft[1]-spaceY/2, bottomLeft[1]+spaceY/2, vertPointAmt))
 
+	# Create all of the sample nodes and keep track of how they ought
+	# to be connected to eachother in the eventual graph structure 
 	allPoints = []
 	nodeIDDict = {}
 	nodeIDToAllPoints = {}
@@ -263,7 +212,8 @@ def boundaryBoxPoints(origin, destination, c, spacing):
 			# Bottom row of neighbors
 			if (vertNum < (len(vertPoints)-1)):
 
-				if (horizNum > 0):	# left
+				# left
+				if (horizNum > 0):	
 					neighborID = ((vertNum+1) * len(horizPoints)) + (horizNum)
 					nodeIDDict[curNodeID].append(neighborID)
 
@@ -276,6 +226,8 @@ def boundaryBoxPoints(origin, destination, c, spacing):
 					neighborID = (vertNum+1) * len(horizPoints) + (horizNum+2)
 					nodeIDDict[curNodeID].append(neighborID)
 
+	# Figure out which points are inside of the ellipse, and add them to goodPoints
+	# Add the other points to badPoints
 	goodPoints = []
 	badPoints = []
 	badNodeIDs = []
@@ -292,18 +244,18 @@ def boundaryBoxPoints(origin, destination, c, spacing):
 			badPoints.append(point)
 			badNodeIDs.append(nodeIDToAllPoints[pointNum])
 
-
-
+	# Rotate the points, and then create their lat, long analogues in newPoints
 	rotatedPoints = [rotatePoint(point, angleRad) for point in allPoints]
 	newPoints = [offsetCoordinates(origin, point) for point in rotatedPoints]
 
-
-	# Make the nodes
+	# Declare various dicts that I'll use to keep track of info during Node cretion
 	startNeighbors = {}
 	endNeighbors = {}
 	nodeIDToNodeListIdx = {}
 	nodeListIdxToID = {}
-	nodeOffsetDict = {} # pointID to node offset in "distance from start" space
+	nodeOffsetDict = {} 
+
+	# Make the Node objects
 	for pointNum, newPoint in enumerate(newPoints):
 
 		# Skip this node if it's a badNode
@@ -326,37 +278,24 @@ def boundaryBoxPoints(origin, destination, c, spacing):
 			pointDist = np.linalg.norm(curPointOffset-neighborPointOffset)
 			neighborList.append((neighborID, pointDist))
 
+		# Append this Node to the nodeLis, and store information about it 
 		nodeList.append(Node(curNodeID, latitude=newPoints[pointNum][0], longitude=newPoints[pointNum][1], neighbors = neighborList))
 		nodeListIdxToID[len(nodeList)-1] = curNodeID
 		nodeOffsetDict[curNodeID] = curPointOffset
 		nodeIDToNodeListIdx[curNodeID] = len(nodeList)-1
 
+	# Figure out which nodes ought to be the neighbors of the start node
 	latLongNodeList = [(x.latitude, x.longitude) for x in nodeList[2:]]
 	distBetweenStartDict = distanceBetweenDict(origin, latLongNodeList)
 	sortedLatLongIdxList_start = [(y+2) for y in distBetweenStartDict]
 	distBetweenStart = [int(nodeListIdxToID[x]) for x in sortedLatLongIdxList_start]
 	startNeighborList = [(x, distBetweenStartDict[nodeIDToNodeListIdx[x]-2]) for x in distBetweenStart][:8]
 
+	# Figure out which nodes ought to be the neighbors of the end node
 	distBetweenEndDict = distanceBetweenDict(destination, latLongNodeList)
 	sortedLatLongIdxList_end = [(y+2) for y in distBetweenEndDict]
 	distBetweenEnd = [nodeListIdxToID[x] for x in sortedLatLongIdxList_end]
 	endNeighborList = [(x, distBetweenEndDict[int(nodeIDToNodeListIdx[x]-2)]) for x in distBetweenEnd][:8]
-
-
-
-	# sortedStart = {k: v for k, v in sorted(startNeighbors.items(), key=lambda item: item[1])}
-	# sortedEnd = {k: v for k, v in sorted(endNeighbors.items(), key=lambda item: item[1])}
-
-	# startNeighborList = ([(nodeID, distance) for nodeID, distance in sortedStart.items()][:8])
-	# print("\nThe sorted start neighbor list is: \n")
-	# for neighborID, distance in sortedStart.items():
-	# 	print("%s (%s meters away from start)\n" % (neighborID, distance))
-	# print("\nThe sorted end neighbor list is: \n")
-	# for neighborID, distance in sortedEnd.items():
-	# 	print("%s (%s meters away from start)\n" % (neighborID, distance))
-	# endNeighborList = ([(nodeID, distance) for nodeID, distance in sortedEnd.items()][:8])
-
-
 
 	# Add the start and end point offsets to the nodeOffsetDict
 	if (not switched):
@@ -373,7 +312,6 @@ def boundaryBoxPoints(origin, destination, c, spacing):
 		if (switched): idToAppend = -1
 		neighborID, dist = startNeighborPair
 		nodeList[nodeIDToNodeListIdx[neighborID]].neighbors.append((idToAppend, dist))
-
 	for endNeighborPair in endNeighborList:
 		idToAppend = -1
 		if (switched): idToAppend = 0
@@ -389,11 +327,13 @@ def boundaryBoxPoints(origin, destination, c, spacing):
 		nodeList[1].neighbors = startNeighborList
 
 	# Uncomment this for visual aids
-	plt.plot(pointA[0], pointA[1], "go", markersize=15)
-	plt.plot(longDiff, latDiff, "ro", markersize=15)
-	for pointNum, point in enumerate(rotatedPoints):
-		plt.plot(point[0], point[1], "go", markersize=2)
-		plt.text(point[0], point[1], nodeIDToAllPoints[pointNum])
-	plt.show()
+	# plt.plot(pointA[0], pointA[1], "go", markersize=15)
+	# plt.plot(longDiff, latDiff, "ro", markersize=15)
+	# for pointNum, point in enumerate(rotatedPoints):
+	# 	plt.plot(point[0], point[1], "go", markersize=2)
+	# 	plt.text(point[0], point[1], nodeIDToAllPoints[pointNum])
+	# plt.show()
 
+	# Return the nodeList, the midpoint and the radius, and the offset dict (which can 
+	# be used to calculate distances later) 
 	return nodeList, (midpointLatLong, (pointDistance/2)+cOffset), nodeOffsetDict

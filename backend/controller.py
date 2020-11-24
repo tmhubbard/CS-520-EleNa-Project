@@ -10,10 +10,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from model.graph.node import Node
 from model.graph.make_graph import make_graph
-from calcBoundary import boundaryBoxPoints, midpoint
+from model.graph.calcBoundary import boundaryBoxPoints, midpoint
 import requests
 import os
-
+import networkx as nx
+from enums import ElevationType
 
 
 #generate osmnx graph for node validation with center as (cx, cy)
@@ -117,88 +118,89 @@ def get_validNodes(sample_points , center, radius, nodeOffsets):
 # breakpoint()
 # G = make_graph(valid_nodes)
 
-import networkx as nx
 
-def test(origin, destination, overhead):
+def get_maximum_path_and_elevation(G, source: int, target: int):
+    paths = nx.all_simple_paths(G, source=source, target=target)
+    maximum_elevation_gain = float('-inf')
+    breakpoint()
+    for path in paths:
+        elevation_gain_of_path = calcElevationGain(G, path)
+        if elevation_gain_of_path > maximum_elevation_gain:
+            maximum_elevation_gain = elevation_gain_of_path
+            maximum_elevation_gain_path = path
+
+    return maximum_elevation_gain_path, maximum_elevation_gain
+
+def get_route_data(origin, destination, elevation_type, overhead):
     nodes, c, nodeOffsets = boundaryBoxPoints(origin, destination, overhead, 150) # c =( (x,y) , radius ) #1.5
     center = c[0]
     radius = c[1]
     valid_nodes, nodeIDsToValidNodesIdx = get_validNodes(nodes, center, radius, nodeOffsets)
     G = make_graph(valid_nodes)
     # breakpoint()
-    shortest_path = nx.astar_path(G, source=0, target=-1)
+
+    if elevation_type == ElevationType.MINIMUM:
+        path = nx.astar_path(G, source=0, target=-1)
+        elevation_gain = calcElevationGain(G, path)
+    else:
+        path, elevation_gain = get_maximum_path_and_elevation(
+            G,
+            source=0, 
+            target=-1
+        )
+    route_distance = calcRouteDistance(G, path)
 
     route = []
-    for nodeNum, node in enumerate(shortest_path):
+    for node in path:
         route.append(
             {
                 "lat": G.nodes.get(node)['latitude'], 
                 "lng": G.nodes.get(node)['longitude']
             }
         )
-    visualizePath(valid_nodes, nodeIDsToValidNodesIdx, shortest_path)
+    # visualizePath(valid_nodes, nodeIDsToValidNodesIdx, path)
 
-    return route, calcElevationGain(G, shortest_path), calcRouteDistance(valid_nodes, nodeIDsToValidNodesIdx, shortest_path)
-    # shortest_path_length = nx.astar_path_length(G, source=166, target=128)
+    return route, elevation_gain, route_distance
 
-# This method will calculate the elevation gain for a given route
 def calcElevationGain(graph, path):
+    """This method will calculate the elevation gain for a given route
+    """
+
+    # Step through each node in the path and add its elevation gain to elevationGain
     elevationGain = 0
     for nodeNum, thisNode in enumerate(path):
 
         # Skip the last node
         if (nodeNum == len(path)-1): continue
 
-        # Get the next node 
+        # Add the elevation change between thisNode and nextNode
         nextNode = path[nodeNum+1]
+        edgeData = graph.get_edge_data(thisNode, nextNode)[0]
+        if (not edgeData is None and "elevation_change" in edgeData):
+            elevationGain += edgeData["elevation_change"]
 
-        # Fetch the elevation values for the given nodes
-        thisNodeElevation = graph.nodes.get(thisNode)["elevation"]
-        nextNodeElevation = graph.nodes.get(nextNode)["elevation"]
-
-        # Don't change the elevation gain if the next node is lower than this one
-        if (nextNodeElevation < thisNodeElevation): continue
-
-        # Calculate elevation gain
-        elevationGain += (nextNodeElevation - thisNodeElevation)
-
+    # Return the total elevation gain for the path
     return elevationGain
 
-# This method will calculate the distance for a given route
-def calcRouteDistance(nodes, NodeIDToNodesIdx, path):
-
+def calcRouteDistance(graph, path):
+    """This method will calculate the distance for a given route
+    """
+    
+    # Step through each node in the path and add its elevation gain to elevationGain
     distance = 0
     for nodeNum, thisNode in enumerate(path):
 
-        # Skip the last node 
+        # Skip the last node
         if (nodeNum == len(path)-1): continue
 
-        # Get the nextNode
+        # Add the elevation change between thisNode and nextNode
         nextNode = path[nodeNum+1]
+        edgeData = graph.get_edge_data(thisNode, nextNode)[0]
+        if (not edgeData is None and "distance" in edgeData):
+            distance += edgeData["distance"]
 
-        # Find the distance between these two nodes
-        nodeDist = 0
-        for neighborID, neighborDist in nodes[NodeIDToNodesIdx[thisNode]].neighbors:
-            if (neighborID == nextNode):
-                nodeDist = neighborDist
-                break
-        distance += nodeDist
+    # Return the total elevation gain for the path
     return distance
-
-
-# shortest_path = nx.astar_path(G, source=, target=4)
-# for point in valid_nodes:
-#     print(str(point.latitude) + "," +  str(point.longitude))
-
-
-# import networkx as nx
-# shortest_path = nx.astar_path(G, source=166, target=128)
-# shortest_path_length = nx.astar_path_length(G, source=166, target=128)
-# breakpoint()
-# import matplotlib.pyplot as plt
-# nx.draw(G, with_labels=True)
-# plt.show()
-
 
 # This method will help me visualize the path that the nodes give
 def visualizePath(nodes, NodeIDToNodesIdx, path):
@@ -228,19 +230,14 @@ def visualizePath(nodes, NodeIDToNodesIdx, path):
         # Skip this node if it's the last one 
         if (pathNodeNum == len(path)-1): continue
 
+        # Highlight the path in red
         thisNode = nodes[NodeIDToNodesIdx[pathNodeID]]
         nextNode = nodes[NodeIDToNodesIdx[path[pathNodeNum+1]]]
-        # nodeDistance = 0
-        # for neighborID, neighborDist in thisNode.neighbors:
-        #     if (neighborID == nextNode.id): 
-        #         nodeDistance = neighborDist
-        #         break
         longitudes = (thisNode.longitude, nextNode.longitude)
         latitudes = (thisNode.latitude, nextNode.latitude)
-        # lineMidpoint = midpoint([thisNode.longitude, thisNode.latitude], [nextNode.longitude, nextNode.latitude])
         plt.plot(longitudes, latitudes, "r-", linewidth=5)
-        # plt.text(lineMidpoint[0], lineMidpoint[1], str(nodeDistance))
 
+    # Show the pyplot
     plt.show()
 
 

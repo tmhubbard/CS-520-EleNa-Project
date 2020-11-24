@@ -130,7 +130,6 @@ def get_maximum_path_and_elevation(G, source: int, target: int, overhead):
     print("cutoff amt: %d" % cutoffAmt)
     paths = nx.all_simple_paths(G, source=source, target=target, cutoff=cutoffAmt)
     maximum_elevation_gain = float('-inf')
-    # breakpoint()
     for path in paths:
         elevation_gain_of_path = calcElevationGain(G, path)
         pathDistance = calcRouteDistance(G, path)

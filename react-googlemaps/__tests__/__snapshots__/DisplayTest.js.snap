@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+"<div>
+  <div style={{...}}>
+    <Wrapper onStartChange={[Function: bound handleMapStartChange]} onEndChange={[Function: bound handleMapEndChange]} startPoint={{...}} endPoint={{...}} isStartingMarkerShown={false} isEndMarkerShown={false} mapcenter={{...}} renderRoute={false} route={{...}} />
+  </div>
+  <div style={{...}}>
+    <InputForm onStartChange={[Function: bound handleInputStartChange]} onEndChange={[Function: bound handleInputEndChange]} onTypeChange={[Function: bound handleInputTypeChange]} onPercentChange={[Function: bound handleInputPercentChange]} startLocation={{...}} endLocation={{...}} startAddress=\\"\\" endAddress=\\"\\" submit={[Function: bound handleSubmit]} />
+    <RouteStats elevation={0} distance={0} />
+  </div>
+</div>"
+`;

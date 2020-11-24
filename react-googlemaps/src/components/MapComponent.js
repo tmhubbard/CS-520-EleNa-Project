@@ -52,9 +52,6 @@ export class MapComponent extends Component {
         console.error(error);
       }
     );
-    //callback function to Display
-    
-    //console.log(location);
     map.panTo(location);
   };
 
@@ -72,7 +69,6 @@ export class MapComponent extends Component {
         console.error(error);
       }
     );
-    // console.log(latLng);
   };
 
   onEndMarkerDragEnd = (coord) => {

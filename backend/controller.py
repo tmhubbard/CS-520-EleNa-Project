@@ -122,7 +122,6 @@ def get_validNodes(sample_points , center, radius, nodeOffsets):
 def get_maximum_path_and_elevation(G, source: int, target: int):
     paths = nx.all_simple_paths(G, source=source, target=target)
     maximum_elevation_gain = float('-inf')
-    breakpoint()
     for path in paths:
         elevation_gain_of_path = calcElevationGain(G, path)
         if elevation_gain_of_path > maximum_elevation_gain:

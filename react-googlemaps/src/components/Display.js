@@ -49,7 +49,7 @@ class Display extends React.Component {
             this.setState({isStartingMarkerShown: true, startPoint: location, startAddress: address});
         }
         else {
-            this.setState({startPoint: location, startAddress: address});
+            this.setState({isStartingMarkerShown: false, startPoint: location, startAddress: address});
         }
         // console.log(location);
         // console.log(address);
@@ -60,7 +60,7 @@ class Display extends React.Component {
             this.setState({isEndMarkerShown: true, endPoint : location, endAddress: address});
         }
         else {
-            this.setState({endPoint : location, endAddress: address});
+            this.setState({isEndMarkerShown: false, endPoint : location, endAddress: address});
         }
         // console.log(location);
         // console.log(address);

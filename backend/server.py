@@ -18,10 +18,10 @@ def get_route():
 
     """
     INCOMING DATA:
-        start_point: {lat: (value) lng: (value)},
-        end_point: {lat: (value) lng: (value)},
+        start_point: {lat: (value), lng: (value)},
+        end_point: {lat: (value), lng: (value)},
         elevation_type: ("min" or "max"),
-        percent_of_distance: (range of 0-100),
+        percent_of_distance: (range of 100-200),
     """
     request_data = request.get_json(force=True, silent=False)
     
@@ -44,8 +44,6 @@ def get_route():
         elevation_type=elevation_type, 
         overhead=overhead
     )
-
-    # breakpoint()
     
     response = {
         "route": route,
@@ -53,7 +51,7 @@ def get_route():
         "total_distance_travelled": distTravel
     }
 
-    return jsonify(**response)
+    return jsonify(**response), 200
 
 
 if __name__ == '__main__':

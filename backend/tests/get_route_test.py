@@ -22,7 +22,9 @@ class GetRouteTest(unittest.TestCase):
         with self.app as client:
             try:
                 json_data = {
-                    'start_point': {'lat': 42.3771782, 'lng': -72.5203465}, 'end_point': {'lat': 42.3782802, 'lng': -72.5202872}, 'elevation_type': 'min', 
+                    'start_point': {'lat': 42.3771782, 'lng': -72.5203465}, 
+                    'end_point': {'lat': 42.3782802, 'lng': -72.5202872}, 
+                    'elevation_type': 'min', 
                     'percent_of_distance': '145'
                 }
                 response = client.post('/getRoute', json=json_data)
@@ -39,7 +41,8 @@ class GetRouteTest(unittest.TestCase):
             expected_response = {
                 'route': [
                     {'lat': 42.3771782, 'lng': -72.5203465}, 
-                    {'lat': 42.376025850082705, 'lng': -72.51918553778908}, {'lat': 42.3782802, 'lng': -72.5202872}
+                    {'lat': 42.376025850082705, 'lng': -72.51918553778908}, 
+                    {'lat': 42.3782802, 'lng': -72.5202872}
                 ], 
                 'total_elevation_gain': 0.26651763916015625,
                 'total_distance_travelled': 1037

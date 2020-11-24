@@ -17,30 +17,23 @@ class InputForm extends React.Component {
     }
 
     handleStartAutocompleteChange = startAddress => {
-        // this.setState({ startAddress });
         this.props.onStartChange(null, startAddress);
     };
 
     handleStartSelect = async value => {
         const results = await geocodeByAddress(value);
         const latLng = await getLatLng(results[0]);
-        // this.setState({startAddress: value, startPoint: latLng });
         this.props.onStartChange(latLng, value);
-        // console.log(results[0].formatted_address);
-        // console.log(latLng);
     };
 
     handleEndAutocompleteChange = endAddress => {
-        // this.setState({ endAddress });
         this.props.onEndChange(null, endAddress);
     };
 
     handleEndSelect = async value => {
         const results = await geocodeByAddress(value);
         const latLng = await getLatLng(results[0]);
-        // this.setState({endAddress: value, endPoint: latLng });
         this.props.onEndChange(latLng, value);
-        // console.log(this.state.endPoint);
     };
     
       
@@ -49,8 +42,6 @@ class InputForm extends React.Component {
         const target = event.target;
         const value = target.value;
         const name = target.name;
-        //console.log(value);
-
         if(name === "elevationType"){
             this.props.onTypeChange(value);
         }
@@ -64,12 +55,9 @@ class InputForm extends React.Component {
     handleSliderChange(percent) {
         this.setState({percentRoute: percent});
         this.props.onPercentChange(percent);
-        //console.log(this.state.percentRoute);
     }
 
-    render() {
-        // console.log(this.state.startAddress);
-        
+    render() {      
         return (
             <div //style={{float: 'left', width: '25%', height: '100%'}}
             >
@@ -166,7 +154,7 @@ class InputForm extends React.Component {
                     Type of Route:
                 </label>
                 <div style={{display: "block"}}>
-                    <input type="radio" id="min" name="elevationType" value="min" onChange={this.handleChange}/>
+                    <input type="radio" id="min" name="elevationType" value="min" checked="checked" onChange={this.handleChange}/>
                     <label htmlFor="min">Minimum Elevation</label>
                     <br />
                     <input type="radio" id="max" name="elevationType" value="max" onChange={this.handleChange}/>

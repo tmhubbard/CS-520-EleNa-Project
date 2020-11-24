@@ -4,7 +4,7 @@ import Display from './components/Display';
 class App extends Component {
   render() {
     return (
-      <Display style={{marginLeft: "20px"}}/>
+      <Display />
     );
   }
 }

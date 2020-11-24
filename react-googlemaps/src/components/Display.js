@@ -15,7 +15,7 @@ class Display extends React.Component {
             startPoint: null,
             endPoint: null,
             elevationType: "min",
-            percentRoute: 10,
+            percentRoute: 120,
             startAddress: '',
             endAddress: '',
             totalElevation: 0,
@@ -31,17 +31,16 @@ class Display extends React.Component {
         this.handleInputPercentChange = this.handleInputPercentChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
+
     //callback functions
     handleMapStartChange(location, address) {
         this.setState({isStartingMarkerShown: true, startPoint : location, startAddress: address, mapCenter: location});
-        // console.log(location);
-        // console.log(address);
+        console.log(location);
+        console.log(address);
     }
 
     handleMapEndChange(location, address) {
         this.setState({isEndMarkerShown: true, endPoint: location, endAddress: address, mapcenter: location});
-        // console.log(location);
-        // console.log(address);
     }
 
     handleInputStartChange(location, address) {
@@ -51,8 +50,6 @@ class Display extends React.Component {
         else {
             this.setState({isStartingMarkerShown: false, startPoint: location, startAddress: address});
         }
-        // console.log(location);
-        // console.log(address);
     }
 
     handleInputEndChange(location, address) {
@@ -62,24 +59,15 @@ class Display extends React.Component {
         else {
             this.setState({isEndMarkerShown: false, endPoint : location, endAddress: address});
         }
-        // console.log(location);
-        // console.log(address);
     }
 
     handleInputTypeChange(type) {
         this.setState({elevationType: type});
-        // console.log(type);
     }
 
     handleInputPercentChange(percent) {
         this.setState({percentRoute: percent});
-        // console.log(percent);
     }
-
-    // handleRecenter(location) {
-    //     this.setState({mapcenter: location});
-    //     console.log(location);
-    // }
 
     handleSubmit() {
         var submission = {
@@ -110,7 +98,6 @@ class Display extends React.Component {
               totalDistance: json.total_distance_travelled,
               totalElevation: json.total_elevation_gain
             });
-            // console.log(json);
 
             var pathCoordinates = this.state.route;
             console.log(this.state.route);
@@ -119,12 +106,8 @@ class Display extends React.Component {
                 bounds.extend(pathCoordinates[i]);
             }
             var coordinate = {lat: bounds.getCenter().lat(), lng: bounds.getCenter().lng()};
-            // console.log(coordinate);
             this.setState({mapcenter: coordinate})
         });
-        
-        
-        
     }
 
 
@@ -136,7 +119,6 @@ class Display extends React.Component {
                     onEndChange = {this.handleMapEndChange}
                     startPoint = {this.state.startPoint}
                     endPoint = {this.state.endPoint}
-                    // recenter = {this.handleRecenter}
                     isStartingMarkerShown = {this.state.isStartingMarkerShown}
                     isEndMarkerShown = {this.state.isEndMarkerShown}
                     mapcenter = {this.state.mapcenter}

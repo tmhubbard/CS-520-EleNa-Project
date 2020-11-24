@@ -16,6 +16,7 @@ import os
 import networkx as nx
 from enums import ElevationType
 
+nodeOffsets = {}
 
 #generate osmnx graph for node validation with center as (cx, cy)
 def get_osmnx_graph(cx , cy, radius):
@@ -119,12 +120,23 @@ def get_validNodes(sample_points , center, radius, nodeOffsets):
 # G = make_graph(valid_nodes)
 
 
-def get_maximum_path_and_elevation(G, source: int, target: int):
-    paths = nx.all_simple_paths(G, source=source, target=target)
+def get_maximum_path_and_elevation(G, source: int, target: int, overhead):
+    maxDistance = overhead * nodeDistance(0, -1)
+    print("Overhead is %s" % overhead)
+    print("Distance between A and B is %s" % (maxDistance/overhead))
+    print("Max distance route can be is %s" % maxDistance)
+    sourceTargetDistance = nodeDistance(source, target)
+    cutoffAmt = int(sourceTargetDistance/150)
+    print("cutoff amt: %d" % cutoffAmt)
+    paths = nx.all_simple_paths(G, source=source, target=target, cutoff=cutoffAmt)
     maximum_elevation_gain = float('-inf')
-    breakpoint()
+    # breakpoint()
     for path in paths:
         elevation_gain_of_path = calcElevationGain(G, path)
+        pathDistance = calcRouteDistance(G, path)
+        if (pathDistance > maxDistance): 
+            print("Skipping path, since its distance is %s" % pathDistance)
+            continue
         if elevation_gain_of_path > maximum_elevation_gain:
             maximum_elevation_gain = elevation_gain_of_path
             maximum_elevation_gain_path = path
@@ -132,7 +144,9 @@ def get_maximum_path_and_elevation(G, source: int, target: int):
     return maximum_elevation_gain_path, maximum_elevation_gain
 
 def get_route_data(origin, destination, elevation_type, overhead):
+    global nodeOffsets
     nodes, c, nodeOffsets = boundaryBoxPoints(origin, destination, overhead, 150) # c =( (x,y) , radius ) #1.5
+
     center = c[0]
     radius = c[1]
     valid_nodes, nodeIDsToValidNodesIdx = get_validNodes(nodes, center, radius, nodeOffsets)
@@ -140,14 +154,10 @@ def get_route_data(origin, destination, elevation_type, overhead):
     # breakpoint()
 
     if elevation_type == ElevationType.MINIMUM:
-        path = nx.astar_path(G, source=0, target=-1)
+        path = nx.astar_path(G, source=0, target=-1, heuristic=nodeDistance)
         elevation_gain = calcElevationGain(G, path)
     else:
-        path, elevation_gain = get_maximum_path_and_elevation(
-            G,
-            source=0, 
-            target=-1
-        )
+        path, elevation_gain = get_maximum_path_and_elevation(G, source=0, target=-1, overhead=overhead)
     route_distance = calcRouteDistance(G, path)
 
     route = []
@@ -161,6 +171,14 @@ def get_route_data(origin, destination, elevation_type, overhead):
     # visualizePath(valid_nodes, nodeIDsToValidNodesIdx, path)
 
     return route, elevation_gain, route_distance
+
+def nodeDistance(source, target):
+    global nodeOffsets
+
+    sourceNodeOffset = nodeOffsets[source]
+    targetNodeOffset = nodeOffsets[target]
+    distance = np.linalg.norm(np.array(sourceNodeOffset)-np.array(targetNodeOffset))
+    return distance
 
 def calcElevationGain(graph, path):
     """This method will calculate the elevation gain for a given route

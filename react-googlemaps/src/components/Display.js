@@ -19,7 +19,8 @@ class Display extends React.Component {
             startAddress: '',
             endAddress: '',
             totalElevation: 0,
-            totalDistance:  0
+            totalDistance:  0,
+            errorMessage: ""
         };
 
         this.handleMapStartChange = this.handleMapStartChange.bind(this);
@@ -48,7 +49,7 @@ class Display extends React.Component {
             this.setState({isStartingMarkerShown: true, startPoint: location, startAddress: address});
         }
         else {
-            this.setState({startPoint: location, startAddress: address});
+            this.setState({isStartingMarkerShown: false, startPoint: location, startAddress: address});
         }
         // console.log(location);
         // console.log(address);
@@ -59,7 +60,7 @@ class Display extends React.Component {
             this.setState({isEndMarkerShown: true, endPoint : location, endAddress: address});
         }
         else {
-            this.setState({endPoint : location, endAddress: address});
+            this.setState({isEndMarkerShown: false, endPoint : location, endAddress: address});
         }
         // console.log(location);
         // console.log(address);
@@ -89,8 +90,13 @@ class Display extends React.Component {
         }
         var JSONsubmission = JSON.stringify(submission);
         console.log(JSONsubmission);
-        //send data to backend
-        //then request data back?
+        if (this.state.startPoint == null || this.state.endPoint == null) {
+            this.setState({errorMessage: "Error: no location selected for either start or end point"});
+            return;
+        }
+        else {
+            this.setState({errorMessage: ""});
+        }
 
         fetch("http://localhost:5000/getRoute", {
           method: 'POST',
@@ -149,6 +155,7 @@ class Display extends React.Component {
                     endAddress = {this.state.endAddress}
                     submit = {this.handleSubmit}
                 />
+                {this.state.errorMessage && <h3 className="error" style = {{color: 'red'}}> {this.state.errorMessage}</h3>}
                 <RouteStats elevation = {this.state.totalElevation}
                     distance = {this.state.totalDistance}/>
                 </div>

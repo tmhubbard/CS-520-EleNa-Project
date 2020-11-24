@@ -6,6 +6,10 @@ from model.graph.make_graph import make_graph
 
 class MakeGraphTest(unittest.TestCase):
     
+    def test_graph(self):
+        G = make_graph(nodes=[Node(id=1, elevation=10)])
+        assert isinstance(G, nx.classes.multidigraph.MultiDiGraph)
+
     def test_astar_search(self):
         """Test astar search on a directed graph to get the minimum path.
         """

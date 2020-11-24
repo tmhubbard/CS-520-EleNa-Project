@@ -2,7 +2,8 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import json
 
-from controller import test
+from controller import get_route_data
+from enums import ElevationType
 
 # import controller
 # import model
@@ -11,8 +12,6 @@ app = Flask(__name__)
 CORS(app)
 
 
-# Command to test a post request
-    # curl -H "Content-type: application/json" -d '{ "origin_lat":"123", "min_max":"min" }' 'http://127.0.0.1:5000/getRoute'
 
 @app.route('/getRoute', methods=['POST'])
 def get_route():
@@ -25,7 +24,7 @@ def get_route():
         percent_of_distance: (range of 0-100),
     """
     request_data = request.get_json(force=True, silent=False)
-
+    
     # Deserialize Data
     start_point = request_data['start_point']
     end_point = request_data['end_point']
@@ -35,9 +34,15 @@ def get_route():
     # PROCESS request_data
     origin = (start_point['lat'], start_point['lng'])
     destination = (end_point['lat'], end_point['lng'])
+    elevation_type = ElevationType(elevation_type)
     overhead = percent_of_distance/100
 
-    route, eleGain, distTravel = test(origin, destination, overhead)
+    route, eleGain, distTravel = get_route_data(
+        origin=origin, 
+        destination=destination, 
+        elevation_type=elevation_type, 
+        overhead=overhead
+    )
 
     # breakpoint()
     

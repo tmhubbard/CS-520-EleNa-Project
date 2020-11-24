@@ -13,7 +13,8 @@ from model.graph.make_graph import make_graph
 from calcBoundary import boundaryBoxPoints, midpoint
 import requests
 import os
-
+import networkx as nx
+from enums import ElevationType
 
 
 #generate osmnx graph for node validation with center as (cx, cy)
@@ -117,28 +118,50 @@ def get_validNodes(sample_points , center, radius, nodeOffsets):
 # breakpoint()
 # G = make_graph(valid_nodes)
 
-import networkx as nx
 
-def test(origin, destination, overhead):
+def get_maximum_path_and_elevation(G, source: int, target: int):
+    paths = nx.all_simple_paths(G, source=source, target=target)
+    maximum_elevation_gain = float('-inf')
+    breakpoint()
+    for path in paths:
+        elevation_gain_of_path = calcElevationGain(G, path)
+        if elevation_gain_of_path > maximum_elevation_gain:
+            maximum_elevation_gain = elevation_gain_of_path
+            maximum_elevation_gain_path = path
+
+    return maximum_elevation_gain_path, maximum_elevation_gain
+
+def get_route_data(origin, destination, elevation_type, overhead):
     nodes, c, nodeOffsets = boundaryBoxPoints(origin, destination, overhead, 150) # c =( (x,y) , radius ) #1.5
     center = c[0]
     radius = c[1]
     valid_nodes, nodeIDsToValidNodesIdx = get_validNodes(nodes, center, radius, nodeOffsets)
     G = make_graph(valid_nodes)
     # breakpoint()
-    shortest_path = nx.astar_path(G, source=0, target=-1)
+
+    if elevation_type == ElevationType.MINIMUM:
+        path = nx.astar_path(G, source=0, target=-1)
+        elevation_gain = calcElevationGain(G, path)
+    else:
+        path, elevation_gain = get_maximum_path_and_elevation(
+            G,
+            source=0, 
+            target=-1
+        )
+    route_distance = calcRouteDistance(valid_nodes, nodeIDsToValidNodesIdx, path)
 
     route = []
-    for nodeNum, node in enumerate(shortest_path):
+    for node in path:
         route.append(
             {
                 "lat": G.nodes.get(node)['latitude'], 
                 "lng": G.nodes.get(node)['longitude']
             }
         )
-    visualizePath(valid_nodes, nodeIDsToValidNodesIdx, shortest_path)
+    visualizePath(valid_nodes, nodeIDsToValidNodesIdx, path)
 
-    return route, calcElevationGain(G, shortest_path), calcRouteDistance(valid_nodes, nodeIDsToValidNodesIdx, shortest_path)
+    return route, elevation_gain, route_distance
+        
     # shortest_path_length = nx.astar_path_length(G, source=166, target=128)
 
 # This method will calculate the elevation gain for a given route

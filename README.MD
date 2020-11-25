@@ -36,3 +36,10 @@ EleNa (Elevation-based Navigation) is a web application that finds the an optima
 
     `python -m unittest discover -v -s ./tests -p "*_test.py"` 
 
+# Contributors
+
+- `Thomas Cheng`
+- `Ritwik Bagga`
+- `Trever Hubbard`
+- `Umair Afzal`
+- `Rae Painter`

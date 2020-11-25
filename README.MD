@@ -25,11 +25,11 @@ EleNa (Elevation-based Navigation) is a web application that finds the an optima
 
 ### 2. In the **/react-googlemaps** directory, run the React client using the following command:
 
-`npm start`
+    `npm start`
 
 ### 3. In the the **/backend** directory, run the Flask server using the following command:
-
-`python server.py`
+    
+    `python server.py`
 
 ## How to run Tests
 

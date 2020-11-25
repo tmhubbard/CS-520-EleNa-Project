@@ -36,5 +36,9 @@ def get_route_data(origin, destination, elevation_type, overhead):
 
     # CONVERT PATH TO LATITUDE, LONGITUDE List to pass to the front end
     route = nodes_to_lat_lng_coordinates(G, path)
+
+    # Elevation gain and route distance to 3 decimal places
+    elevation_gain = round(elevation_gain, 3)
+    route_distance = round(route_distance, 3)
     
     return route, elevation_gain, route_distance

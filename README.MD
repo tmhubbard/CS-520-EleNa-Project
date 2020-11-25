@@ -25,4 +25,4 @@ In the the *backend* directory, run the Flask server using the following command
 
 ### `npm test` In the *react-googlemaps* directory
 
-### `python -m unittest tests/*` In the the *backend* directory
+### `python -m unittest discover -v -s ./tests -p "*_test.py"` In the the *backend* directory

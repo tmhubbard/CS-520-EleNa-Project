@@ -12,16 +12,17 @@ def get_maximum_path_and_elevation(G, source: int, target: int, overhead):
     cutoffAmt = int(sourceTargetDistance/150)
     paths = nx.all_simple_paths(G, source=source, target=target, cutoff=cutoffAmt)
     maximum_elevation_gain = float('-inf')
-    with open("results.txt", "a") as resultFile:
-        for path in paths:
-            elevation_gain_of_path = calcElevationGain(G, path)
-            pathDistance = calcRouteDistance(G, path)
-            if (pathDistance > maxDistance): 
-                continue
-            resultFile.write("%s\n" % elevation_gain_of_path)
-            if elevation_gain_of_path > maximum_elevation_gain:
-                maximum_elevation_gain = elevation_gain_of_path
-                maximum_elevation_gain_path = path
+    # with open("results.txt", "a") as resultFile:
+    maximum_elevation_gain_path = [0, 12, 6, 7, 11, -1]
+    for path in paths:
+        elevation_gain_of_path = calcElevationGain(G, path)
+        pathDistance = calcRouteDistance(G, path)
+        if (pathDistance > maxDistance): 
+            continue
+        # resultFile.write("%s\n" % elevation_gain_of_path)
+        if elevation_gain_of_path > maximum_elevation_gain:
+            maximum_elevation_gain = elevation_gain_of_path
+            maximum_elevation_gain_path = path
 
     return maximum_elevation_gain_path, maximum_elevation_gain
 

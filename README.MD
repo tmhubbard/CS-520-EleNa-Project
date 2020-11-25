@@ -18,11 +18,6 @@ EleNa (Elevation-based Navigation) is a web application that finds the an optima
         
     `pip install -r requirements.txt`
 
-- Additional Dependencies
-
-    `osmnx` - can be installed using [conda](https://osmnx.readthedocs.io/en/stable/#installation)
-
-
 ### 2. In the **/react-googlemaps** directory, run the React client using the following command:
 
 `npm start`

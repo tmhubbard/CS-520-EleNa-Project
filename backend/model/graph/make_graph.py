@@ -1,14 +1,29 @@
 from .node import Node
 import networkx as nx
+import numpy as np
+# import osmnx as ox
+import requests
 from logging import (
     error as log_error,
     info as log_info,
     basicConfig as log_basicConfig,
     DEBUG
 )
+from model.graph.calcBoundary import boundaryBoxPoints, midpoint
 
 log_basicConfig(format='%(levelname)s:%(message)s', level=DEBUG)
+nodeOffsets = {}
+SOURCE = 0
+TARGET = -1
 
+def get_graph(origin, destination, overhead):
+    global nodeOffsets
+    nodes, c, nodeOffsets = boundaryBoxPoints(origin, destination, overhead, 150) # c =( (x,y) , radius ) #1.5
+    center = c[0]
+    radius = c[1]
+    valid_nodes, _ = get_validNodes(nodes, center, radius, nodeOffsets)
+    G = make_graph(valid_nodes)
+    return G
 
 def make_graph(nodes: list):
     """Use the list of nodes to create a NetworkX Directed Graph.
@@ -45,3 +60,105 @@ def make_graph(nodes: list):
         raise
         
     return G
+
+#generate osmnx graph for node validation with center as (cx, cy)
+# def get_osmnx_graph(cx , cy, radius):
+#     center = (cx, cy)
+#     graph_orig = ox.graph_from_point(center, dist = radius, network_type='walk')
+#     return graph_orig
+
+#returns the elevation of a lat,lng location
+def get_elevation(location:(float, float))-> float:
+    lat = location[0]
+    lng = location[1]
+    apikey = "AIzaSyBmg_5waDYCtmUW3YCNJ75dUWc6_5_i8wE"
+    apikey = "AIzaSyC0_EhM25ltUK20oJPH4k4Ni6jqiU4bS2Q" # Trevor's API key
+    url = "https://maps.googleapis.com/maps/api/elevation/json"
+    request = requests.get(url + "?locations=" + str(lat) + "," + str(lng) + "&key=" + apikey).json()
+    return request['results'][0]['elevation']
+
+#from the list of sample_points validates and adds elevation for each location
+#return type is valid points list( (lat, lng , elevation) )
+
+def get_validNodes(sample_points , center, radius, nodeOffsets):
+    # hard coding the cx , cy for osmnx graph
+    # cx , cy =center[0], center[1] # location of DU BOYS Library
+    # osmnx_graph = get_osmnx_graph(cx,cy, radius)
+    #ox.plot.plot_graph(osmnx_graph)
+    Nodes = []
+    NodeIDToNodesIdx = {}
+    nodes_ids = []
+    reconnectThreshold = 3
+
+    for _data, point in enumerate(sample_points):  #point is (lat, lng)
+        location = (point.latitude, point.longitude)
+        # node_dst = ox.distance.get_nearest_node(osmnx_graph, location, method='haversine', return_dist= True)[1]
+        # nearest_point_ID = ox.distance.get_nearest_node(osmnx_graph, location, method='haversine', return_dist= True)[0]
+
+        #check for valid range ( 10m>node_dst > 100m)
+        # if (node_dst<3 or node_dst>10) or (index==0 or index == 1): #need to tune this
+        point.elevation = get_elevation(location) #add elevation
+        Nodes.append(point)
+        NodeIDToNodesIdx[point.id] = len(Nodes)-1
+        nodes_ids.append(point.id)
+    
+    newBackEdges = [] # This will be helpful for reconnecting "islanded" nodes 
+
+    for node in Nodes:
+        valid_neighbors = []
+        for neighbor in node.neighbors:
+            neighbor_id = neighbor[0]
+            neighbor_dist = neighbor[1]
+            if neighbor_id in nodes_ids:
+                valid_neighbors.append((neighbor_id, neighbor_dist))
+
+        # Prevent this node from being "islanded" by reconnecting it w/ closer nodes
+        if (len(valid_neighbors) < reconnectThreshold):
+            
+            # Calculate the distance between this node and all other valid nodes
+            neighborDists = {}
+            for otherPointID in nodes_ids:
+                curNodeOffset = nodeOffsets[node.id]
+                neighborOffset = nodeOffsets[otherPointID]
+                dist = np.linalg.norm(curNodeOffset - neighborOffset)
+                neighborDists[otherPointID] = dist
+
+            # Sort the distances, and reconnect the closest couple
+            sortedNeighborDists = {k: v for k, v in sorted(neighborDists.items(), key=lambda item: item[1])}
+            toReconnect = [(nodeID, distance) for nodeID, distance in list(sortedNeighborDists.items())[:reconnectThreshold]]
+            currentConnected = [nodeID for nodeID, neighDist in valid_neighbors]
+            for neighborPair in toReconnect:
+                neighborID, neighborDist = neighborPair
+                if (neighborID not in currentConnected):
+                    valid_neighbors.append((neighborID, neighborDist))
+                    newBackEdges.append((neighborID, node.id, neighborDist))
+
+        node.neighbors = valid_neighbors      
+
+    # Make the new back edges for the nodes that you reconnected 
+    for backEdge in newBackEdges:
+        sourceNodeID = backEdge[0]
+        targetNodeID = backEdge[1]
+        backEdgeDist = backEdge[2]
+        Nodes[NodeIDToNodesIdx[sourceNodeID]].neighbors.append((targetNodeID, backEdgeDist))    
+
+    return Nodes, NodeIDToNodesIdx
+
+def nodeDistance(source, target):
+    global nodeOffsets
+
+    sourceNodeOffset = nodeOffsets[source]
+    targetNodeOffset = nodeOffsets[target]
+    distance = np.linalg.norm(np.array(sourceNodeOffset)-np.array(targetNodeOffset))
+    return distance
+
+def nodes_to_lat_lng_coordinates(G, path):
+    route = []
+    for node in path:
+        route.append(
+            {
+                "lat": G.nodes.get(node)['latitude'], 
+                "lng": G.nodes.get(node)['longitude']
+            }
+        )
+    return route

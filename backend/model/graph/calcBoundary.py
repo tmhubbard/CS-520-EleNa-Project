@@ -9,16 +9,10 @@
 
 from math import sin, cos, pi, atan
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import googlemaps
 from model.graph.node import Node
-from logging import (
-    error as log_error,
-    exception as log_exception,
-    info as log_info,
-    basicConfig as log_basicConfig,
-    DEBUG
-)
+
 
 # Setting up the Google Maps instance
 apiKey = "AIzaSyC0_EhM25ltUK20oJPH4k4Ni6jqiU4bS2Q"

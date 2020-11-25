@@ -22,8 +22,8 @@ class GetRouteTest(unittest.TestCase):
         with self.app as client:
             try:
                 json_data = {
-                    'start_point': {'lat': 42.3771782, 'lng': -72.5203465}, 
-                    'end_point': {'lat': 42.3782802, 'lng': -72.5202872}, 
+                    'start_point': {'lat': 42.39035906429909, 'lng': -72.52511712936675}, 
+                    'end_point': {'lat': 42.38978061083876, 'lng': -72.52498938916241}, 
                     'elevation_type': 'min', 
                     'percent_of_distance': '145'
                 }
@@ -40,14 +40,13 @@ class GetRouteTest(unittest.TestCase):
 
             expected_response = {
                 'route': [
-                    {'lat': 42.3771782, 'lng': -72.5203465}, 
-                    {'lat': 42.38138877500999, 'lng': -72.5206228697157}, 
-                    {'lat': 42.3782802, 'lng': -72.5202872}
+                    {'lat': 42.39035906429909, 'lng': -72.52511712936675}, 
+                    {'lat': 42.38978061083876, 'lng': -72.52498938916241}
                 ], 
-                'total_elevation_gain': 3.8315887451171875,
-                'total_distance_travelled': 1453
+                'total_elevation_gain': 0.589, 
+                'total_distance_travelled': 65.0
             }
-
+            
             self.assertEqual(response.json, expected_response, \
                 f"Invalid Response Data! Got {response.json}, \
                 Expected {expected_response}")

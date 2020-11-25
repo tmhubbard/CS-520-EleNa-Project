@@ -3,8 +3,8 @@
 ## What is EleNA?
 EleNa (Elevation-based Navigation) is a web application that finds the an optimal route between two points by considering distance and elevation gain. EleNa would be used by runners, bikers, and hikers.
 
-<img src="static_images/img1.PNG" alt="UI 1" width="1000"/>
-<img src="static_images/img2.PNG" alt="UI 2" width="1000"/>
+<img src="static_images/image1.PNG" alt="UI 1" width="1000"/>
+<img src="static_images/image2.PNG" alt="UI 2" width="1000"/>
 
 ## How to run the App
 
@@ -17,11 +17,6 @@ EleNa (Elevation-based Navigation) is a web application that finds the an optima
 - Inside **/backend** directory run:
         
     `pip install -r requirements.txt`
-
-- Additional Dependencies
-
-    `osmnx` - can be installed using [conda](https://osmnx.readthedocs.io/en/stable/#installation)
-
 
 ### 2. In the **/react-googlemaps** directory, run the React client using the following command:
 
@@ -41,3 +36,10 @@ EleNa (Elevation-based Navigation) is a web application that finds the an optima
 
     `python -m unittest discover -v -s ./tests -p "*_test.py"` 
 
+# Contributors
+
+- `Thomas Cheng`
+- `Ritwik Bagga`
+- `Trever Hubbard`
+- `Umair Afzal`
+- `Rae Painter`

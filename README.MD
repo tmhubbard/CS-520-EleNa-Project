@@ -27,7 +27,7 @@ EleNa (Elevation-based Navigation) is a web application that finds the an optima
 
 `npm start`
 
-### In the the **/backend** directory, run the Flask server using the following command:
+### 3. In the the **/backend** directory, run the Flask server using the following command:
 
 `python server.py`
 
@@ -35,9 +35,9 @@ EleNa (Elevation-based Navigation) is a web application that finds the an optima
 
 1. In the **/react-googlemaps** directory run:
 
-`npm test` 
+    `npm test` 
 
 2. In the the **/backend** directory run:
 
-`python -m unittest discover -v -s ./tests -p "*_test.py"` 
+    `python -m unittest discover -v -s ./tests -p "*_test.py"` 
 

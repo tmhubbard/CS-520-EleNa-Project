@@ -11,16 +11,18 @@ EleNa (Elevation-based Navigation) is a web application that finds the an optima
 ### 1. Install front-end dependencies and the server dependencies
 
     Inside the /react-googlemaps directory run:
-    `npm install`
+    
+        npm install
 
     Inside /backend directory run:
-    `pip install -r requirements.txt`
+        
+        pip install -r requirements.txt
 
-### 2. In the **react-googlemaps** directory, run the React client using the following command:
+### 2. In the **/react-googlemaps** directory, run the React client using the following command:
 
 `npm start`
 
-### In the the **backend** directory, run the Flask server using the following command:
+### In the the **/backend** directory, run the Flask server using the following command:
 
 `python server.py`
 

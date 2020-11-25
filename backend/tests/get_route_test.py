@@ -37,15 +37,15 @@ class GetRouteTest(unittest.TestCase):
 
             self.assertEqual(response.status_code, 200, \
                 f"Invalid Response Code! Got {response.status_code}")
-            
+
             expected_response = {
                 'route': [
                     {'lat': 42.3771782, 'lng': -72.5203465}, 
-                    {'lat': 42.376025850082705, 'lng': -72.51918553778908}, 
+                    {'lat': 42.38138877500999, 'lng': -72.5206228697157}, 
                     {'lat': 42.3782802, 'lng': -72.5202872}
                 ], 
-                'total_elevation_gain': 0.26651763916015625,
-                'total_distance_travelled': 1037
+                'total_elevation_gain': 3.8315887451171875,
+                'total_distance_travelled': 1453
             }
 
             self.assertEqual(response.json, expected_response, \

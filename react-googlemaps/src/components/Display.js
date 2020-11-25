@@ -3,6 +3,8 @@ import InputForm from './InputForm';
 import MapComponent from './MapComponent';
 import RouteStats from './RouteStats';
 
+/*Display is the final parent component, it handles all the data through its state and callback functions passed to children,
+and handles the logic for submitting user queries to the backend for routes*/
 class Display extends React.Component {
     constructor(props) {
         super(props);
@@ -32,17 +34,20 @@ class Display extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    //callback functions
+    /*CALL BACK FUNCTIONS PASSED TO CHILDREN COMPONENT TO UPDATE STATE
+    ----------------------------------------------------------------*/
+
+    //handles start location change from the MapComponent
     handleMapStartChange(location, address) {
         this.setState({isStartingMarkerShown: true, startPoint : location, startAddress: address, mapCenter: location});
-        console.log(location);
-        console.log(address);
     }
 
+    //handles end location change from the MapComponent
     handleMapEndChange(location, address) {
         this.setState({isEndMarkerShown: true, endPoint: location, endAddress: address, mapcenter: location});
     }
 
+    //handles start location change from the InputForm
     handleInputStartChange(location, address) {
         if(location != null) {
             this.setState({isStartingMarkerShown: true, startPoint: location, startAddress: address});
@@ -52,6 +57,7 @@ class Display extends React.Component {
         }
     }
 
+    //handles end location change from the InputForm
     handleInputEndChange(location, address) {
         if(location != null) {
             this.setState({isEndMarkerShown: true, endPoint : location, endAddress: address});
@@ -61,35 +67,43 @@ class Display extends React.Component {
         }
     }
 
+    //handles route type change from InputForm
     handleInputTypeChange(type) {
         this.setState({elevationType: type});
     }
 
+    //handles route distance change from Inputform
     handleInputPercentChange(percent) {
         this.setState({percentRoute: percent});
     }
 
+    /*Callback function passed to Inputform for submit "find route" button*/
     handleSubmit() {
+        //info for submission comes from state
         var submission = {
             start_point: this.state.startPoint,
             end_point: this.state.endPoint,
             elevation_type: this.state.elevationType,
             percent_of_distance: this.state.percentRoute,
         }
+        //submission object turned to JSON string
         var JSONsubmission = JSON.stringify(submission);
-        console.log(JSONsubmission);
+        //validation checking to make sure a valid location is passed to backend, displays error if null
         if (this.state.startPoint == null || this.state.endPoint == null) {
             this.setState({errorMessage: "Error: no location selected for either start or end point"});
             return;
         }
+        //resets error message to nothing once valid points are entered
         else {
             this.setState({errorMessage: ""});
         }
 
+        //call to backend to send query for route
         fetch("http://localhost:5000/getRoute", {
           method: 'POST',
           body: JSONsubmission
         })
+        //receiving backend response as a route with statistics
         .then(res => res.json())
         .then(json => {
             this.setState({
@@ -99,8 +113,8 @@ class Display extends React.Component {
               totalElevation: json.total_elevation_gain
             });
 
+            //recenters the map based on the route received
             var pathCoordinates = this.state.route;
-            console.log(this.state.route);
             var bounds = new window.google.maps.LatLngBounds();
             for (var i = 0; i < pathCoordinates.length; i++) {
                 bounds.extend(pathCoordinates[i]);
@@ -114,7 +128,8 @@ class Display extends React.Component {
     render() {
         return (
             <div>
-                <div style = {{float: 'right', width: '82%', height: '100%', overflowX: 'hidden'}}>
+                {/*MapComponent*/}
+                <div style = {{float: 'right', width: '82%', height: '100%', overflowX: 'hidden'}}> 
                 <MapComponent onStartChange = {this.handleMapStartChange} 
                     onEndChange = {this.handleMapEndChange}
                     startPoint = {this.state.startPoint}
@@ -126,7 +141,10 @@ class Display extends React.Component {
                     route = {this.state.route}
                     />
                 </div>
+                {/*Div for InputForm component, Error message, and RouteStats component*/}
                 <div style = {{marginLeft: "20px", width: '17%', height: '100%'}}>
+                {/* <h1 style = {{color: 'darkcyan', fontFamily: '"Trebuchet MS", Helvetica, sans-serif '}}>EleNa</h1> */}
+                {/*InputForm*/}
                 <InputForm onStartChange = {this.handleInputStartChange}
                     onEndChange = {this.handleInputEndChange}
                     onTypeChange = {this.handleInputTypeChange}
@@ -137,9 +155,12 @@ class Display extends React.Component {
                     endAddress = {this.state.endAddress}
                     submit = {this.handleSubmit}
                 />
+                {/*Displays error message if invalid start/end points are subitted*/}
                 {this.state.errorMessage && <h3 className="error" style = {{color: 'red'}}> {this.state.errorMessage}</h3>}
+                {/*RouteStats*/}
                 <RouteStats elevation = {this.state.totalElevation}
                     distance = {this.state.totalDistance}/>
+
                 </div>
             </div>
         );

@@ -36,8 +36,6 @@ class InputForm extends React.Component {
         this.props.onEndChange(latLng, value);
     };
     
-      
-
     handleChange(event) {
         const target = event.target;
         const value = target.value;

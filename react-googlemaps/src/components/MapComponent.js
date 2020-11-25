@@ -16,49 +16,53 @@ export class MapComponent extends Component {
     this.handleMapRightClick = this.handleMapRightClick.bind(this);
   }
 
+  //updates parent Display component state on a left click (adding start marker to map)
   handleMapClick = (ref, map, ev) => {
     const location = ev.latLng;
     var coordinate = {lat: location.lat(), lng: location.lng()};  //creating latlng object in {lat, lng} format    
     let address = "";
+
+    // gets address of location given latlng values using Google Maps Geocode library
     Geocode.setApiKey("AIzaSyCyrU7Z1OXQxOpvVMsQVk1FZvWWb3R3ssA");
     Geocode.fromLatLng(location.lat(), location.lng()).then(
       response => {
         address = response.results[0].formatted_address;
         this.props.onStartChange(coordinate, address);
+        map.panTo(location);
       },
       error => {
         console.error(error);
       }
     );
-    //callback function to Display
-    
-    map.panTo(location);
-
-    //this is how we turn a google maps api latLng object to a readable JSON object
-    //var object = JSON.stringify(ev.latLng.toJSON(), null, 2);
   };
 
+  //updates parent Display component state on a right click (adding end marker to map)
   handleMapRightClick = (ref, map, ev) => {
     const location = ev.latLng;
     var coordinate = {lat: location.lat(), lng: location.lng()};  //creating latlng object in {lat, lng} format    
     let address = "";
+
+    // gets address of location given latlng values using Google Maps Geocode library
     Geocode.setApiKey("AIzaSyCyrU7Z1OXQxOpvVMsQVk1FZvWWb3R3ssA");
     Geocode.fromLatLng(location.lat(), location.lng()).then(
       response => {
         address = response.results[0].formatted_address;
         this.props.onEndChange(coordinate, address);
+        map.panTo(location);
       },
       error => {
         console.error(error);
       }
     );
-    map.panTo(location);
   };
 
+  //updates parent Display component state on the conclusion of the dragging of start marker
   onStartingMarkerDragEnd = (coord) => {
     const { latLng } = coord;
     var coordinate = {lat: latLng.lat(), lng: latLng.lng()};  //creating latlng object in {lat, lng} format    
     let address = "";
+
+    // gets address of location given latlng values using Google Maps Geocode library
     Geocode.setApiKey("AIzaSyCyrU7Z1OXQxOpvVMsQVk1FZvWWb3R3ssA");
     Geocode.fromLatLng(latLng.lat(), latLng.lng()).then(
       response => {
@@ -71,10 +75,13 @@ export class MapComponent extends Component {
     );
   };
 
+  //updates parent Display component state on the conclusion of the dragging of end marker
   onEndMarkerDragEnd = (coord) => {
     const { latLng } = coord;
     var coordinate = {lat: latLng.lat(), lng: latLng.lng()};  //creating latlng object in {lat, lng} format
     let address = "";
+
+    // gets address of location given latlng values using Google Maps Geocode library
     Geocode.setApiKey("AIzaSyCyrU7Z1OXQxOpvVMsQVk1FZvWWb3R3ssA");
     Geocode.fromLatLng(latLng.lat(), latLng.lng()).then(
       response => {
@@ -85,17 +92,7 @@ export class MapComponent extends Component {
         console.error(error);
       }
     );
-    
-    // console.log(latLng);
   };
-
-  receiveStartPoint(props) {
-    this.setState({startingMarkerPosition: props.startLocation});
-  }
-
-  receiveEndPoint(props) {
-    this.setState({endMarkerPosition: props.endLocation});
-  }
 
   render() {
     var pathCoordinates = this.props.route;
@@ -110,30 +107,37 @@ export class MapComponent extends Component {
           onClick={this.handleMapClick}
           onRightclick={this.handleMapRightClick}
         >
+          {/* if renderRoute is true, draw polylines to represent the route */}
           {this.props.renderRoute &&
-          <Polyline
-          path={pathCoordinates}
-          geodesic={true}
-          options={{
-              strokeColor: "#FF2527",
-              strokeOpacity: 1.0,
-              strokeWeight: 3
-          }}/>
+            <Polyline
+            path={pathCoordinates}
+            geodesic={true}
+            options={{
+                strokeColor: "#FF2527",
+                strokeOpacity: 1.0,
+                strokeWeight: 3
+            }}/>
           }
+
+          {/* If isStartingMarkerShown is true, render the start Marker */}
           {this.props.isStartingMarkerShown && 
-          <Marker 
-          position={this.props.startPoint}
-          draggable={true}
-          label="A"
-          onDragend={(t, map, coord) => this.onStartingMarkerDragEnd(coord)}
-          />}
+            <Marker 
+            position={this.props.startPoint}
+            draggable={true}
+            label="A"
+            onDragend={(t, map, coord) => this.onStartingMarkerDragEnd(coord)}
+            />
+          }
+
+          {/* If isStartingMarkerShown is true, render the start Marker */}
           {this.props.isEndMarkerShown && 
-          <Marker 
-          position={this.props.endPoint}
-          draggable={true}
-          label="B"
-          onDragend={(t, map, coord) => this.onEndMarkerDragEnd(coord)}
-          />}
+            <Marker 
+            position={this.props.endPoint}
+            draggable={true}
+            label="B"
+            onDragend={(t, map, coord) => this.onEndMarkerDragEnd(coord)}
+            />
+          }
         </Map>
     );
   }

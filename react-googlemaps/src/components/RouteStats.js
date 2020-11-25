@@ -1,10 +1,6 @@
 import React from 'react';
 
 class RouteStats extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <div style={{float: 'left', clear: 'both', marginTop: "10px"}}>

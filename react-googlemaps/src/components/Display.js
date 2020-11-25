@@ -35,8 +35,6 @@ class Display extends React.Component {
     //callback functions
     handleMapStartChange(location, address) {
         this.setState({isStartingMarkerShown: true, startPoint : location, startAddress: address, mapCenter: location});
-        console.log(location);
-        console.log(address);
     }
 
     handleMapEndChange(location, address) {
@@ -77,7 +75,6 @@ class Display extends React.Component {
             percent_of_distance: this.state.percentRoute,
         }
         var JSONsubmission = JSON.stringify(submission);
-        console.log(JSONsubmission);
         if (this.state.startPoint == null || this.state.endPoint == null) {
             this.setState({errorMessage: "Error: no location selected for either start or end point"});
             return;
@@ -100,7 +97,6 @@ class Display extends React.Component {
             });
 
             var pathCoordinates = this.state.route;
-            console.log(this.state.route);
             var bounds = new window.google.maps.LatLngBounds();
             for (var i = 0; i < pathCoordinates.length; i++) {
                 bounds.extend(pathCoordinates[i]);

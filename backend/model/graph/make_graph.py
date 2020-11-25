@@ -1,7 +1,7 @@
 from .node import Node
 import networkx as nx
 import numpy as np
-import osmnx as ox
+# import osmnx as ox
 import requests
 from logging import (
     error as log_error,
@@ -62,10 +62,10 @@ def make_graph(nodes: list):
     return G
 
 #generate osmnx graph for node validation with center as (cx, cy)
-def get_osmnx_graph(cx , cy, radius):
-    center = (cx, cy)
-    graph_orig = ox.graph_from_point(center, dist = radius, network_type='walk')
-    return graph_orig
+# def get_osmnx_graph(cx , cy, radius):
+#     center = (cx, cy)
+#     graph_orig = ox.graph_from_point(center, dist = radius, network_type='walk')
+#     return graph_orig
 
 #returns the elevation of a lat,lng location
 def get_elevation(location:(float, float))-> float:

@@ -33,11 +33,11 @@ EleNa (Elevation-based Navigation) is a web application that finds the an optima
 
 ## How to run Tests
 
-### 1. In the */react-googlemaps* directory run:
+1. In the */react-googlemaps* directory run:
 
 `npm test` 
 
-### 2. In the the */backend* directory run:
+2. In the the */backend* directory run:
 
 `python -m unittest discover -v -s ./tests -p "*_test.py"` 
 

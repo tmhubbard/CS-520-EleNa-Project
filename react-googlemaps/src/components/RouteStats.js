@@ -1,5 +1,6 @@
 import React from 'react';
 
+//This is the component that displays the statistics of the route received
 class RouteStats extends React.Component {
     render() {
         return (

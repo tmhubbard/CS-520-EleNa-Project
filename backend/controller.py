@@ -53,11 +53,11 @@ def get_validNodes(sample_points , center, radius, nodeOffsets):
         # nearest_point_ID = ox.distance.get_nearest_node(osmnx_graph, location, method='haversine', return_dist= True)[0]
 
         #check for valid range ( 10m>node_dst > 100m)
-        if (node_dst<3 or node_dst>10) or (index==0 or index == 1): #need to tune this
-            point.elevation = get_elevation(location) #add elevation
-            Nodes.append(point)
-            NodeIDToNodesIdx[point.id] = len(Nodes)-1
-            nodes_ids.append(point.id)
+        # if (node_dst<3 or node_dst>10) or (index==0 or index == 1): #need to tune this
+        point.elevation = get_elevation(location) #add elevation
+        Nodes.append(point)
+        NodeIDToNodesIdx[point.id] = len(Nodes)-1
+        nodes_ids.append(point.id)
     
     newBackEdges = [] # This will be helpful for reconnecting "islanded" nodes 
 
@@ -122,23 +122,20 @@ def get_validNodes(sample_points , center, radius, nodeOffsets):
 
 def get_maximum_path_and_elevation(G, source: int, target: int, overhead):
     maxDistance = overhead * nodeDistance(0, -1)
-    print("Overhead is %s" % overhead)
-    print("Distance between A and B is %s" % (maxDistance/overhead))
-    print("Max distance route can be is %s" % maxDistance)
     sourceTargetDistance = nodeDistance(source, target)
     cutoffAmt = int(sourceTargetDistance/150)
-    print("cutoff amt: %d" % cutoffAmt)
     paths = nx.all_simple_paths(G, source=source, target=target, cutoff=cutoffAmt)
     maximum_elevation_gain = float('-inf')
-    for path in paths:
-        elevation_gain_of_path = calcElevationGain(G, path)
-        pathDistance = calcRouteDistance(G, path)
-        if (pathDistance > maxDistance): 
-            print("Skipping path, since its distance is %s" % pathDistance)
-            continue
-        if elevation_gain_of_path > maximum_elevation_gain:
-            maximum_elevation_gain = elevation_gain_of_path
-            maximum_elevation_gain_path = path
+    with open("results.txt", "a") as resultFile:
+        for path in paths:
+            elevation_gain_of_path = calcElevationGain(G, path)
+            pathDistance = calcRouteDistance(G, path)
+            if (pathDistance > maxDistance): 
+                continue
+            resultFile.write("%s\n" % elevation_gain_of_path)
+            if elevation_gain_of_path > maximum_elevation_gain:
+                maximum_elevation_gain = elevation_gain_of_path
+                maximum_elevation_gain_path = path
 
     return maximum_elevation_gain_path, maximum_elevation_gain
 
@@ -150,10 +147,9 @@ def get_route_data(origin, destination, elevation_type, overhead):
     radius = c[1]
     valid_nodes, nodeIDsToValidNodesIdx = get_validNodes(nodes, center, radius, nodeOffsets)
     G = make_graph(valid_nodes)
-    # breakpoint()
 
     if elevation_type == ElevationType.MINIMUM:
-        path = nx.astar_path(G, source=0, target=-1, heuristic=nodeDistance)
+        path = nx.astar_path(G, source=0, target=-1)
         elevation_gain = calcElevationGain(G, path)
     else:
         path, elevation_gain = get_maximum_path_and_elevation(G, source=0, target=-1, overhead=overhead)
@@ -167,7 +163,6 @@ def get_route_data(origin, destination, elevation_type, overhead):
                 "lng": G.nodes.get(node)['longitude']
             }
         )
-    # visualizePath(valid_nodes, nodeIDsToValidNodesIdx, path)
 
     return route, elevation_gain, route_distance
 

@@ -149,6 +149,7 @@ class Display extends React.Component {
                     onEndChange = {this.handleInputEndChange}
                     onTypeChange = {this.handleInputTypeChange}
                     onPercentChange = {this.handleInputPercentChange}
+                    elevationType = {this.state.elevationType}
                     startLocation = {this.state.startPoint}
                     endLocation = {this.state.endPoint}
                     startAddress = {this.state.startAddress}

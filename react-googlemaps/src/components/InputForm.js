@@ -45,7 +45,7 @@ class InputForm extends React.Component {
 
     //handles changes to radio buttons regarding the type of route (min vs max)
     handleTypeChange(event) {
-            this.props.onTypeChange(event.target.value);
+        this.props.onTypeChange(event.target.value);
     }
 
     //handles submit button
@@ -60,7 +60,8 @@ class InputForm extends React.Component {
         this.props.onPercentChange(percent);
     }
 
-    render() {      
+    render() {  
+        const minChecked = this.props.elevationType === "min" ? true : false;    
         return (
             <div>
             <form onSubmit = {this.handleSubmit}>
@@ -159,10 +160,10 @@ class InputForm extends React.Component {
                     Type of Route:
                 </label>
                 <div style={{display: "block"}}>
-                    <input type="radio" id="min" name="elevationType" value="min" checked="checked" onChange={this.handleTypeChange}/>
+                    <input type="radio" id="min" name="elevationType" value="min" checked={minChecked} onChange={this.handleTypeChange}/>
                     <label htmlFor="min">Minimum Elevation</label>
                     <br />
-                    <input type="radio" id="max" name="elevationType" value="max" onChange={this.handleTypeChange}/>
+                    <input type="radio" id="max" name="elevationType" value="max" checked={!minChecked} onChange={this.handleTypeChange}/>
                     <label htmlFor="max">Maximum Elevation</label>
                 </div>
                 <br />

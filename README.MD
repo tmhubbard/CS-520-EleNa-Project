@@ -1,7 +1,7 @@
 # EleNA: Elevation Based Navigation
 
 ## What is EleNA?
-EleNa (Elevation-based Navigation) is a web application that finds the an optimal route between two points by considering distance and elevation gain. EleNa would be used by runners, bikers, and hikers.
+EleNa (Elevation-based Navigation) is a web application that finds the optimal route between two points by considering distance and elevation gain. EleNa would be used by runners, bikers, and hikers.
 
 <img src="static_images/image1.PNG" alt="UI 1" width="1000"/>
 <img src="static_images/image2.PNG" alt="UI 2" width="1000"/>

@@ -3,13 +3,8 @@
 # ellipse boundary around an origin and destination, and figure out (lat, long)
 # points within this ellipse to use as sample points for the EleNa graph 
 
-# =========================
-#        * SETUP *
-# =========================
-
 from math import sin, cos, pi, atan
 import numpy as np
-# import matplotlib.pyplot as plt
 import googlemaps
 from model.graph.node import Node
 
@@ -320,14 +315,4 @@ def boundaryBoxPoints(origin, destination, c, spacing):
 		nodeList[0].neighbors = endNeighborList
 		nodeList[1].neighbors = startNeighborList
 
-	# Uncomment this for visual aids
-	# plt.plot(pointA[0], pointA[1], "go", markersize=15)
-	# plt.plot(longDiff, latDiff, "ro", markersize=15)
-	# for pointNum, point in enumerate(rotatedPoints):
-	# 	plt.plot(point[0], point[1], "go", markersize=2)
-	# 	plt.text(point[0], point[1], nodeIDToAllPoints[pointNum])
-	# plt.show()
-
-	# Return the nodeList, the midpoint and the radius, and the offset dict (which can 
-	# be used to calculate distances later) 
 	return nodeList, (midpointLatLong, (pointDistance/2)+cOffset), nodeOffsetDict

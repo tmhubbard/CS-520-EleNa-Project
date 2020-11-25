@@ -5,9 +5,6 @@ import json
 from controller import get_route_data
 from enums import ElevationType
 
-# import controller
-# import model
-
 app = Flask(__name__)
 CORS(app)
 

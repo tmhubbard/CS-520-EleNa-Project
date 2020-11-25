@@ -1,7 +1,6 @@
 from .node import Node
 import networkx as nx
 import numpy as np
-# import osmnx as ox
 import requests
 from logging import (
     error as log_error,
@@ -61,12 +60,6 @@ def make_graph(nodes: list):
         
     return G
 
-#generate osmnx graph for node validation with center as (cx, cy)
-# def get_osmnx_graph(cx , cy, radius):
-#     center = (cx, cy)
-#     graph_orig = ox.graph_from_point(center, dist = radius, network_type='walk')
-#     return graph_orig
-
 #returns the elevation of a lat,lng location
 def get_elevation(location:(float, float))-> float:
     lat = location[0]
@@ -77,14 +70,10 @@ def get_elevation(location:(float, float))-> float:
     request = requests.get(url + "?locations=" + str(lat) + "," + str(lng) + "&key=" + apikey).json()
     return request['results'][0]['elevation']
 
+
 #from the list of sample_points validates and adds elevation for each location
 #return type is valid points list( (lat, lng , elevation) )
-
 def get_validNodes(sample_points , center, radius, nodeOffsets):
-    # hard coding the cx , cy for osmnx graph
-    # cx , cy =center[0], center[1] # location of DU BOYS Library
-    # osmnx_graph = get_osmnx_graph(cx,cy, radius)
-    #ox.plot.plot_graph(osmnx_graph)
     Nodes = []
     NodeIDToNodesIdx = {}
     nodes_ids = []
@@ -92,11 +81,6 @@ def get_validNodes(sample_points , center, radius, nodeOffsets):
 
     for _data, point in enumerate(sample_points):  #point is (lat, lng)
         location = (point.latitude, point.longitude)
-        # node_dst = ox.distance.get_nearest_node(osmnx_graph, location, method='haversine', return_dist= True)[1]
-        # nearest_point_ID = ox.distance.get_nearest_node(osmnx_graph, location, method='haversine', return_dist= True)[0]
-
-        #check for valid range ( 10m>node_dst > 100m)
-        # if (node_dst<3 or node_dst>10) or (index==0 or index == 1): #need to tune this
         point.elevation = get_elevation(location) #add elevation
         Nodes.append(point)
         NodeIDToNodesIdx[point.id] = len(Nodes)-1

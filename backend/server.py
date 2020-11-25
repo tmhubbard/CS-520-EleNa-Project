@@ -36,7 +36,6 @@ def get_route():
     destination = (end_point['lat'], end_point['lng'])
     elevation_type = ElevationType(elevation_type)
     overhead = percent_of_distance/100
-    print("overhead: %s" % overhead)
 
     route, eleGain, distTravel = get_route_data(
         origin=origin, 

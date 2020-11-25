@@ -143,9 +143,10 @@ class Display extends React.Component {
                 </div>
                 {/*Div for InputForm component, Error message, and RouteStats component*/}
                 <div style = {{marginLeft: "20px", width: '17%', height: '100%'}}>
+                <label style = {{color: 'darkcyan', fontFamily: '"Trebuchet MS", Helvetica, sans-serif ', fontSize: '275%'}}>EleNa</label>
                 {/* <h1 style = {{color: 'darkcyan', fontFamily: '"Trebuchet MS", Helvetica, sans-serif '}}>EleNa</h1> */}
                 {/*InputForm*/}
-                <InputForm onStartChange = {this.handleInputStartChange}
+                <InputForm style = {{marginTop: '10px'}}onStartChange = {this.handleInputStartChange}
                     onEndChange = {this.handleInputEndChange}
                     onTypeChange = {this.handleInputTypeChange}
                     onPercentChange = {this.handleInputPercentChange}

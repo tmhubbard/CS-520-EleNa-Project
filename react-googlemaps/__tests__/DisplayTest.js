@@ -1,6 +1,6 @@
 import React from 'react';
 import Display from '../src/components/Display';
-import { shallow, mount, render, ReactWrapper } from 'enzyme';
+import { shallow } from 'enzyme';
 import Enzyme from 'enzyme';
 import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import InputForm from '../src/components/InputForm';

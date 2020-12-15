@@ -1,4 +1,5 @@
 import osmnx as ox
+import networkx as nx
 import pickle as pkl
 from enums import MINIMUM
 from max_search import maximize_elevation_gain
@@ -78,21 +79,22 @@ def get_map():
 #     return cost
 
 
-def route_coordinates(self, route):
+def route_coordinates(Graph, route):
+    geometry = nx.get_edge_attributes(Graph ,'geometry')
     route_coordinates = []
     for edge in route:
         src, tgt, edge_id = edge
-        edge_data = self.G[src][tgt][edge_id]
+        edge_data = Graph[src][tgt][edge_id]
 
-        src_y, src_x = self.G.nodes[src]['y'], self.G.nodes[src]['x']
-        tgt_y, tgt_x = self.G.nodes[tgt]['y'], self.G.nodes[tgt]['x']
+        src_y, src_x = Graph.nodes[src]['y'], Graph.nodes[src]['x']
+        tgt_y, tgt_x = Graph.nodes[tgt]['y'], Graph.nodes[tgt]['x']
 
         if 'geometry' not in edge_data:
             mid_y = (tgt_y + src_y) / 2
             mid_x = (tgt_x + src_x) / 2
 
         else:
-            edge_linestring_coords = self.geometry[edge].coords
+            edge_linestring_coords = geometry[edge].coords
             mid_idx = int(len(edge_linestring_coords) / 2)
             mid_x, mid_y = list(edge_linestring_coords)[mid_idx]
 

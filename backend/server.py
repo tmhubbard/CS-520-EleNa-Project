@@ -6,7 +6,7 @@ from controller import get_route_data
 from enums import ElevationType
 
 app = Flask(__name__)
-CORS(app)
+CORS(app) #package for integration with REACT
 
 
 

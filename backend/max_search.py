@@ -1,11 +1,6 @@
-"""
-Elevation gain maximize algorithms within x% of shortest path
-@author: Ritwik Bagga
-"""
-
-import networkx as nx, osmnx as ox
+import networkx as nx
+import osmnx as ox
 import copy
-
 
 
 def find_path_edges(graph, path, max_weight='ele_gain'):
@@ -87,7 +82,7 @@ Upon finding this path P_new, it will be inserted between P_n and P_n+1
 """
 
 
-def maximize(graph, source, target, percent_shortest_path, ):
+def maximize_elevation_gain(graph, source, target, percent_shortest_path, ):
     shortest_path = nx.shortest_path(graph, source, target, 'length')
     working_path = copy.deepcopy(shortest_path)
 

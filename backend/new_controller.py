@@ -2,6 +2,7 @@ import osmnx as ox
 import networkx as nx
 import pickle as pkl
 from enums import MINIMUM
+import inspect, os
 from max_search import maximize_elevation_gain
 from min_search import minimize_elevation_gain
 # from model.graph.make_graph import (
@@ -37,46 +38,6 @@ def get_map():
     return  graph_projection, graph_orig
 
 
-# def get_path(came_from, origin, destination):
-#         route_by_length_minele = []
-#         p = destination
-#         route_by_length_minele.append(p)
-#         while p != origin:
-#            p = came_from[p]
-#            route_by_length_minele.append(p)
-#         route_by_length_minele = route_by_length_minele[::-1]
-#         return route_by_length_minele
-#
-#
-#
-# def get_cost(graph_projection, a, b):
-#     return graph_projection.edges[a, b, 0]['length']
-#
-#
-#
-# def get_elevation_cost(self, graph_projection, a, b):
-#     return (graph_projection.nodes[a]['elevation'] - graph_projection.nodes[b]['elevation'])
-#
-#
-#
-# def get_total_elevation(self, graph_projection, route):
-#     if not route:
-#         return 0
-#     elevation_cost = 0
-#     for i in range(len(route)-1):
-#          elevation_data = self.get_elevation_cost(graph_projection, route[i], route[i+1])
-#          if elevation_data > 0:
-#              elevation_cost += elevation_data
-#     return elevation_cost
-#
-#
-# def get_total_length(self, graph_projection, route):
-#     if not route:
-#         return 0
-#     cost = 0
-#     for i in range(len(route)-1):
-#          cost += self.get_cost(graph_projection, route[i], route[i+1])
-#     return cost
 
 
 def route_coordinates(Graph, route):
@@ -123,7 +84,13 @@ def route_coordinates(Graph, route):
 
 def get_route_data(origin, destination, elevation_type, overhead):
     # GENERATE GRAPH
+
+    #using pikle to read graph -> will see if this works
+    G = nx.read_gpickle(os.path.dirname(os.path.abspath(inspect.stack()[0][1])) + "/amherst_graph.gpickle")
+
+
     graph_projection, graph_orig = get_map()
+
     source = ox.get_nearest_node(graph_orig,(float(origin[0]), float(origin[1])))
     target =  ox.get_nearest_node(graph_orig,(float(destination[0]), float(destination[1])))
     bbox = ox.bbox_from_point((float(origin[0]), float(origin[1])), distance=1500, project_utm=True)

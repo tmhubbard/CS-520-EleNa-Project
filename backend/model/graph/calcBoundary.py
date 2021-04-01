@@ -10,7 +10,7 @@ from model.graph.node import Node
 
 
 # Setting up the Google Maps instance
-apiKey = "AIzaSyC0_EhM25ltUK20oJPH4k4Ni6jqiU4bS2Q"
+apiKey = input("\nPlease enter your Google Maps API key: ")
 gmaps = googlemaps.Client(key=apiKey)
 
 def distanceBetween(origin, destination):
